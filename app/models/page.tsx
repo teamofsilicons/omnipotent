@@ -1,3 +1,5 @@
+import { ArrowSquareOut, PencilSimple } from "@phosphor-icons/react/dist/ssr"
+
 import { Graph } from "./graph"
 import { beatenBy, dialFor, edge, plottable, unusable } from "../../lib/dial"
 import { EDIT, graph, VIEW } from "../../lib/graph"
@@ -156,10 +158,12 @@ export default async function Models() {
           </ul>
           <div className="row" style={{ marginTop: "1.6rem" }}>
             <a className="btn solid" href={EDIT}>
+              <PencilSimple size={14} weight="bold" />
               add a model
             </a>
             <a className="btn ghost" href="/intelligence.json">
               the dial, as json
+              <ArrowSquareOut size={14} weight="bold" />
             </a>
           </div>
         </div>

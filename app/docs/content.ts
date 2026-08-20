@@ -16,6 +16,8 @@ export interface Entry {
 
 export interface Section {
   id: string
+  /** phosphor icon name, so the contents can be scanned by shape */
+  icon: string
   title: string
   blurb: string
   code?: string
@@ -26,6 +28,7 @@ export interface Section {
 export const SECTIONS: Section[] = [
   {
     id: "install",
+    icon: "DownloadSimple",
     title: "Install",
     blurb:
       "One package, no dependencies. You bring the CLIs, and omni only offers the ones that are both installed and signed in.",
@@ -56,6 +59,7 @@ export const SECTIONS: Section[] = [
   },
   {
     id: "inference",
+    icon: "Door",
     title: "Inference",
     blurb: "The front door. The only object you import, besides the events.",
     code: `from omni import Inference, Event
@@ -90,6 +94,7 @@ chat = Inference.load_or_create_session("nightly-triage", PROVIDERS)`,
   },
   {
     id: "chat",
+    icon: "ChatCircleDots",
     title: "Chat",
     blurb:
       "Everything below is recorded the moment you call it and applied at the next turn boundary. Nothing changes mid turn.",
@@ -183,6 +188,7 @@ chat = Inference.load_or_create_session("nightly-triage", PROVIDERS)`,
   },
   {
     id: "events",
+    icon: "Broadcast",
     title: "Events",
     blurb:
       "One dataclass for everything. The same objects go to your handlers, to your logs, and onto disk — so the session file is the event log, and there is never a second schema.",
@@ -215,6 +221,7 @@ chat = Inference.load_or_create_session("nightly-triage", PROVIDERS)`,
   },
   {
     id: "sessions",
+    icon: "Files",
     title: "Sessions",
     blurb:
       "The session file is the source of truth, and it outlives any provider. Everything else on disk is bookkeeping about it.",
@@ -238,6 +245,7 @@ chat = Inference.load_or_create_session("nightly-triage", PROVIDERS)`,
   },
   {
     id: "auth",
+    icon: "Key",
     title: "Auth",
     blurb: "omni drives each CLI's own login rather than making you open the CLI.",
     code: `Inference.claude.auth_status
@@ -262,6 +270,7 @@ Inference.claude.finish_auth("code-or-redirect-url")`,
   },
   {
     id: "limits",
+    icon: "Gauge",
     title: "Limits",
     blurb: "Every provider is asked in a way that costs no tokens.",
     code: `Inference.openai.limits
@@ -288,6 +297,7 @@ Inference.claude.finish_auth("code-or-redirect-url")`,
   },
   {
     id: "registry",
+    icon: "Database",
     title: "The registry",
     blurb:
       "omni contains the name of no model. It asks this site for a finished map from level to model and hands the two strings to a CLI.",
