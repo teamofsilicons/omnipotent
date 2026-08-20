@@ -4,6 +4,7 @@ import {
   Broadcast,
   ChatCircleDots,
   Database,
+  TestTube,
   Door,
   DownloadSimple,
   Files,
@@ -35,6 +36,7 @@ const ICONS: Record<string, React.ComponentType<{ size?: number; weight?: "bold"
   Key,
   Gauge,
   Database,
+  TestTube,
 }
 
 export function Docs() {
@@ -92,7 +94,16 @@ export function Docs() {
       </aside>
 
       <div className="docs-body">
-        <h1 className="rise">Documentation.</h1>
+        <h1 className="rise">
+          Documentation.{" "}
+          <a
+            className="release num"
+            href="https://pypi.org/project/silicon-omni/"
+            title="the release this page documents"
+          >
+            v0.2.0
+          </a>
+        </h1>
         <p className="lede rise" style={{ ["--i" as string]: 1, marginTop: "1.3rem", maxWidth: "34rem" }}>
           Every call omni exposes. Flip to <strong>internal</strong> at any point to see the flag,
           the JSON-RPC method or the file write it actually becomes.

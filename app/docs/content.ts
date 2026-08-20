@@ -155,16 +155,27 @@ chat = Inference.load_or_create_session("nightly-triage", PROVIDERS)`,
       },
       { call: "chat.append_system_prompt_file(path)", does: "The same, read from a file." },
       {
-        call: "chat.disable_subagents()",
-        does: "So only the workers you define get used.",
+        call: "chat.enable_subagents()",
+        does:
+          "Let the provider spawn its own. Off by default — a chat starts quiet, and you opt back in rather than out.",
         inside:
-          "claude: `--disallowedTools \"Agent(*)\"` plus `CLAUDE_CODE_DISABLE_WORKFLOWS=1`. codex: `--disable apps --disable plugins -c agents.enabled=false -c project_doc_max_bytes=0`, and because skills live outside CODEX_HOME they are additionally switched off one at a time over `skills/config/write`. agy has no equivalent at all, and says so.",
+          "Quiet means claude gets `--disallowedTools \"Agent(*)\"` plus `CLAUDE_CODE_DISABLE_WORKFLOWS=1`, and codex gets `--disable apps --disable plugins -c agents.enabled=false`; because skills live outside CODEX_HOME they are additionally switched off one at a time over `skills/config/write`. `-c project_doc_max_bytes=0` is sent whichever way this is set, so opting in cannot bring an AGENTS.md along with it. agy has no equivalent at all, and says so.",
       },
       {
-        call: "chat.disable_mcp()",
-        does: "No MCP servers, no external connectors.",
+        call: "chat.enable_mcp()",
+        does: "Let the provider load its MCP servers and connectors. Off by default.",
         inside:
-          "claude: `--strict-mcp-config --setting-sources \"\"`. codex is already isolated by its jail. agy cannot, and says so.",
+          "Quiet means claude gets `--strict-mcp-config --setting-sources \"\"`. codex is isolated by its jail either way. agy cannot be, and says so.",
+      },
+      {
+        call: "chat.disable_subagents()",
+        does: "The default, said out loud.",
+      },
+      { call: "chat.disable_mcp()", does: "Likewise." },
+      {
+        call: "chat.disable_autoremoving_unauthenticated_providers()",
+        does:
+          "Stop dropping a provider that loses its login mid-run. On by default; see Auth.",
       },
       {
         call: "chat.cwd(path)",
@@ -215,7 +226,20 @@ chat = Inference.load_or_create_session("nightly-triage", PROVIDERS)`,
       },
       { call: "Event.SWITCH_PROVIDER", takes: "provider, extra.from", does: "The conversation moved." },
       { call: "Event.NEW_SESSION", takes: "extra.native", does: "A provider opened one of its own." },
-      { call: "Event.CONFIG", takes: "text", does: "A setting changed, or omni did something worth recording." },
+      {
+        call: "Event.CONFIG",
+        takes: "text",
+        does:
+          "A setting changed, or omni did something worth recording: `launch` · `retune` · `reseed` · `provider_removed` · `unsupported` · `approximated` · `stop`.",
+      },
+      {
+        call: "event.seq",
+        gives: "int",
+        does:
+          "Its position in the session log. Only ever goes up, and never repeats, across every provider the conversation has passed through.",
+        inside:
+          "This is how omni knows what a provider still has to be told: the meta file records the last seq each one saw, so coming back replays exactly what was recorded since, and nothing twice.",
+      },
     ],
     note: "Fields: type, session, provider, model, text, tool, id, args, result, ok, kind, error, at, seq, extra. Anything at its default is left out of the file.",
   },
@@ -266,16 +290,24 @@ Inference.claude.finish_auth("code-or-redirect-url")`,
         inside:
           "Codex runs its own browser callback, so there this waits for an `account/login/completed` notification rather than typing anything, and the code is ignored.",
       },
+      {
+        call: "a login that dies mid-run",
+        does:
+          "The provider is dropped from that chat, the error is reported, and the same intelligence level is resolved again over whoever is left — so the conversation carries on somewhere else.",
+        inside:
+          "An `ERROR`/`auth` closes the turn, emits `CONFIG`/`provider_removed`, then relaunches, which reports as a `SWITCH_PROVIDER`. The failed turn is not replayed: it is in the log for the next provider to read, but re-driving it could re-run a tool that already ran. Turn the whole behaviour off with `chat.disable_autoremoving_unauthenticated_providers()` and the error simply ends the turn.",
+      },
     ],
   },
   {
     id: "limits",
     icon: "Gauge",
     title: "Limits",
-    blurb: "Every provider is asked in a way that costs no tokens.",
+    blurb:
+      "Every provider is asked in a way that costs no tokens. `used` is a fraction and `reset` is an RFC3339 UTC string from all three, whatever they answer in natively — one of them counts seconds since the epoch, and you never have to know which.",
     code: `Inference.openai.limits
-# {'5h': {'used': 0.0,  'reset': 1787209867},
-#  '7d': {'used': 0.16, 'reset': 1787196805}}`,
+# {'5h': {'used': 0.0,  'reset': '2026-08-21T14:31:07.000Z'},
+#  '7d': {'used': 0.16, 'reset': '2026-08-21T10:53:25.000Z'}}`,
     entries: [
       {
         call: "claude",
@@ -294,6 +326,39 @@ Inference.claude.finish_auth("code-or-redirect-url")`,
         inside: "`agy -p /usage`, which the CLI answers itself, so no model is called and no quota is spent.",
       },
     ],
+  },
+  {
+    id: "testing",
+    icon: "TestTube",
+    title: "Testing",
+    blurb:
+      "A provider that needs no CLI, no login and no quota, and answers the same way every time. It is not registered until you ask for it, so it can never appear in a real run by accident.",
+    code: `from omni import Inference
+from omni.providers import test
+
+test.install()
+chat = Inference.load_or_create_session("t", ["test"])
+chat.start()
+chat.send("hello")        # -> TEXT  'echo: hello'`,
+    entries: [
+      {
+        call: "test.install()",
+        gives: "str",
+        does: "Register the provider and pin a whole 0-10 dial for it.",
+        inside:
+          "The dial is written into `~/.omni/cache/intelligence.json` under its own key, so routing runs through exactly the same path a real provider would and nothing reaches the network.",
+      },
+      { call: "[tool:NAME]", does: "Runs `NAME`: a `TOOL.CALL` and a matching `TOOL.RESULT`." },
+      {
+        call: "[recall]",
+        does: "Replies with everything it was told before this message.",
+        inside:
+          "Including history it was only ever *seeded* with, which is what makes it useful for testing a provider switch without a switch.",
+      },
+      { call: "anything else", does: "Replies `echo: <what you sent>`." },
+    ],
+    note:
+      "The library's own live suite runs against the real ~/.omni rather than a sandbox, because a test that uses different paths from a real run is not testing a real run. `scripts/cleanup.py` in the repo takes its sessions, jails and working directories back out afterwards.",
   },
   {
     id: "registry",
