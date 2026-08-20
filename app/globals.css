@@ -25,7 +25,6 @@ html, body {
 body { font-family: var(--font-sans); }
 
 ::selection { background: #555; color: var(--bone); }
-.terminal ::selection, .install-bar ::selection { background: #555; color: var(--bone); }
 
 .site { opacity: 0; animation: settle .8s ease forwards; min-height: 100vh; }
 @keyframes settle { to { opacity: 1; } }
@@ -162,7 +161,6 @@ body { font-family: var(--font-sans); }
   line-height: 1.7;
 }
 
-.section p.wide { max-width: 780px; }
 .section a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
 .section a:hover { opacity: .6; }
 
@@ -220,7 +218,6 @@ code.inline {
 .grid .gc { padding: .75rem 1.5rem; border-bottom: 1px solid var(--rule); }
 .grid .gc.strong { color: var(--ink); font-weight: 700; }
 .grid .gc.quiet { color: var(--faint); }
-.grid .gc.no { color: var(--red); }
 
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px; background: var(--rule); margin: 3rem 0; }
 .card { background: var(--bone); padding: 2rem; }
@@ -299,7 +296,7 @@ code.inline {
 
 .field .hint { font-family: var(--font-sans); text-transform: none; letter-spacing: 0; color: var(--quiet); font-size: 13px; margin-top: .4rem; }
 
-input[type=text], input[type=number], input[type=password], select {
+input[type=text], input[type=number], select {
   width: 100%;
   font-family: var(--font-mono);
   font-size: 14px;
@@ -338,8 +335,6 @@ select { background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50
 .dial-table td { padding: .7rem 1rem .7rem 0; border-bottom: 1px solid var(--rule); vertical-align: middle; }
 .dial-table tr:hover td { background: rgba(26, 26, 26, .03); }
 .dial-table .lvl { font-weight: 700; }
-
-.strip { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.5rem 0; }
 
 /* ------------------------------------------------------------------ small */
 

@@ -54,8 +54,6 @@ export const PROVIDERS: Provider[] = [
   },
 ]
 
-export const PROVIDER_IDS = PROVIDERS.map((p) => p.id)
-
 /**
  * The rung, written out as the command it is.
  *
@@ -75,7 +73,8 @@ export function provider(id: string): Provider | undefined {
 }
 
 /** Every non-empty combination of providers, named the way omni asks for them. */
-export function combinations(ids: ProviderId[] = PROVIDER_IDS as ProviderId[]): string[] {
+export function combinations(): string[] {
+  const ids = PROVIDERS.map((p) => p.id)
   const out: string[] = []
   for (let mask = 1; mask < 1 << ids.length; mask++) {
     out.push(ids.filter((_, i) => mask & (1 << i)).sort().join("+"))
