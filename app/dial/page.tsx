@@ -14,7 +14,6 @@ interface Model {
 interface Links {
   raw: string
   edit: string
-  view: string
 }
 
 const blank = { provider: "claude", model: "", effort: "", score: "", price: "" }

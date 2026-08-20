@@ -16,8 +16,6 @@ const VENDORS = new Set(["anthropic", "openai", "gemini"])
 export interface Model {
   name: string
   vendor: string
-  context: number | null
-  reasoning: boolean
 }
 
 let cache: { at: number; models: Model[] } | null = null
@@ -35,12 +33,7 @@ export async function models(): Promise<Model[]> {
     if (!spec || typeof spec !== "object") continue
     const vendor = String(spec.litellm_provider ?? "")
     if (!VENDORS.has(vendor) || spec.mode !== "chat") continue
-    found.push({
-      name,
-      vendor,
-      context: typeof spec.max_input_tokens === "number" ? spec.max_input_tokens : null,
-      reasoning: spec.supports_reasoning === true,
-    })
+    found.push({ name, vendor })
   }
   found.sort((a, b) => a.vendor.localeCompare(b.vendor) || a.name.localeCompare(b.name))
   cache = { at: Date.now(), models: found }
