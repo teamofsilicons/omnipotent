@@ -106,6 +106,16 @@ export function edge(points: Rung[]): Rung[] {
   return out
 }
 
+/**
+ * What knocked this model off the edge: the cheapest thing that is at least as
+ * good. Worth showing rather than saying — it is the whole argument in one line.
+ */
+export function beatenBy(point: Rung, points: Rung[]): Rung | null {
+  const better = points.filter((q) => q !== point && beats(q, point))
+  if (!better.length) return null
+  return better.reduce((best, q) => (q.price < best.price ? q : best))
+}
+
 /** Spread the edge over levels 0-10, 10 at the top. */
 export function dial(points: Rung[]): Record<string, Rung> {
   if (!points.length) return {}

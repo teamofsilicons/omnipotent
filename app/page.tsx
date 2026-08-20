@@ -1,351 +1,241 @@
 import { Copy } from "./copy"
-import { Footer } from "./footer"
+import { Dither } from "./dither"
 import { dialFor } from "../lib/dial"
 import { graph } from "../lib/graph"
 
-const INSTALL = "pip install silicon-omni"
-
-const EVENTS: [string, string][] = [
-  ["START", "the message that opened this turn"],
-  ["TEXT", "one finished assistant message"],
-  ["THINKING", "the model is reasoning. never what it thought"],
-  ["TOOL.CALL", "tool, args, id"],
-  ["TOOL.RESULT", "tool, id, result, ok"],
-  ["END", "the turn is over"],
-  ["INJECTED", "a message that landed mid-turn"],
-  ["ERROR", "auth · limit · unavailable · crash"],
-  ["SWITCH_PROVIDER", "the conversation moved"],
-  ["NEW_SESSION", "a provider opened one of its own"],
-]
-
-export default async function Home() {
+export default async function Landing() {
   const { models } = await graph()
   const rungs = dialFor(models, ["claude", "openai", "google"])
+  const top = rungs["10"]
+  const floor = rungs["0"]
+  const ratio = top && floor ? Math.round(top.price / floor.price) : 0
 
   return (
     <>
-      <div className="hero">
-        <h1 className="hero-brand">
-          silicon
-          <br />
-          omni.
-        </h1>
-        <div className="hero-sub">
-          <div className="hero-tagline">
-            one interface for claude code,
+      <section className="hero">
+        <Dither shape="radial" />
+        <div className="shell">
+          <h1 className="rise" style={{ ["--i" as string]: 0 }}>
+            Your agent should not be
             <br />
-            codex and antigravity
-            <br />
-            <br />
-            by{" "}
-            <a className="strong" href="https://unlikefraction.com" target="_blank" rel="noreferrer">
-              unlikefraction
+            married to one vendor.
+          </h1>
+          <p className="lede rise column" style={{ ["--i" as string]: 1, marginTop: "1.6rem" }}>
+            silicon omni runs Claude Code, Codex and Antigravity behind a single Python object,
+            on the subscriptions you already pay for. Turn one dial and the same conversation
+            finishes on a different vendor&apos;s model, with everything that came before already
+            in its head.
+          </p>
+          <div className="row rise" style={{ ["--i" as string]: 2, marginTop: "2rem" }}>
+            <code className="install">pip install silicon-omni</code>
+            <Copy text="pip install silicon-omni" />
+            <a className="btn ghost" href="/docs">
+              read the documentation
             </a>
           </div>
-          <nav className="hero-nav">
-            <a href="#move">switching</a>
-            <a href="#dial">the dial</a>
-            <a href="#events">events</a>
-            <a href="/reference">reference</a>
-            <a href="/dial">edit the dial</a>
-          </nav>
-        </div>
-      </div>
-
-      <div className="install-bar">
-        <code>
-          <span className="dollar">$ </span>
-          {INSTALL}
-        </code>
-        <Copy text={INSTALL} />
-      </div>
-
-      <section className="section">
-        <h2>
-          three clis.
-          <br />
-          one conversation.
-        </h2>
-        <p className="lede">
-          Every vendor ships a good agentic CLI and a subscription that makes it cheap to run.
-          None of them talk to each other. Pick one and you are married to its models, its rate
-          limits and its outages.
-        </p>
-        <p>
-          omni owns the conversation instead. Claude Code, Codex and Antigravity become
-          interchangeable engines underneath a single Python object, driven by the subscriptions
-          you already pay for rather than API keys. Zero runtime dependencies. You bring the CLIs.
-        </p>
-
-        <div className="terminal">
-          <span className="dim"># the whole surface</span>
-          {"\n"}
-          from omni import Inference, Event{"\n\n"}
-          chat = Inference.load_or_create_session(<span className="accent">&quot;nightly-triage&quot;</span>){"\n"}
-          chat.intelligence(<span className="accent">7</span>){"\n\n"}
-          <span className="dim">@chat.on_event</span>
-          {"\n"}
-          def handle(event):{"\n"}
-          {"    "}if event.type == Event.TOOL.CALL:{"\n"}
-          {"        "}print(event.tool, event.args){"\n\n"}
-          chat.start(){"\n"}
-          chat.send(<span className="accent">&quot;what changed in this repo today?&quot;</span>)
-        </div>
-
-        <div className="cards">
-          <div className="card">
-            <div className="num">claude code</div>
-            <h4>Flags do the work</h4>
-            <p>
-              Subagents, MCP and memory files switch off from the command line. Seeding is a file
-              write. Model changes go over the stdin control channel, so re-tuning never restarts
-              anything.
-            </p>
-          </div>
-          <div className="card">
-            <div className="num">codex</div>
-            <h4>App server, not exec</h4>
-            <p>
-              Runs against a CODEX_HOME of its own holding two things: a link to your real
-              auth.json and a near-empty config. History arrives by thread/inject_items.
-            </p>
-          </div>
-          <div className="card">
-            <div className="num">antigravity</div>
-            <h4>The awkward one</h4>
-            <p>
-              No flag for MCP, none for subagents, and no way to seed. omni folds prior
-              conversation into the front of the next message, so catching up costs one turn
-              rather than two.
-            </p>
-          </div>
+          <p className="quiet rise" style={{ ["--i" as string]: 3, fontSize: 13, marginTop: "1.4rem" }}>
+            Zero dependencies. Three CLIs. One session file that outlives all of them.
+          </p>
         </div>
       </section>
 
-      <section className="section" id="move">
-        <h2>
-          the conversation
-          <br />
-          moves.
-        </h2>
-        <p>
-          Raise the dial mid-run and the next turn can land on a different vendor&apos;s model,
-          with everything that came before already in its head. Coming back is cheaper still: the
-          provider resumes its own session and is told only what it missed.
-        </p>
-        <p>
-          This is a real run, not a mock. Three facts, three vendors, one session id.
-        </p>
+      <div className="shell rails">
+        <section className="stitched enter">
+          <div className="rule"><span>the problem</span></div>
+          <div className="column">
+            <h2>
+              Every vendor ships a good CLI.
+              <br />
+              None of them speak to each other.
+            </h2>
+            <p style={{ marginTop: "1.4rem" }}>
+              So you pick one, and you inherit its models, its rate limits and its bad afternoons.
+              Switching later means rewriting your integration and abandoning the conversation you
+              were in the middle of.
+            </p>
+            <p>
+              omni takes the conversation off the vendor and keeps it. The providers become
+              engines you can change while the engine is running.
+            </p>
+          </div>
 
-        <div className="terminal">
-          <span className="dim">--- claude @ level 5 (claude-sonnet-5) ---</span>
-          {"\n"}
-          Remember: fact one is <span className="accent">RUBY-1</span>. Reply with exactly: OK{"\n"}
-          <span className="green">✓ </span>OK{"\n\n"}
-          <span className="dim">--- openai @ level 1 (gpt-5.4-mini) ---</span>
-          {"\n"}
-          <span className="accent">switch_provider</span>{"  "}claude → openai{"\n"}
-          <span className="accent">new_session</span>
-          {"     "}01a01d11-5ca8-7d02{"\n"}
-          Remember: fact two is <span className="accent">JADE-2</span>. Reply with exactly: OK{"\n"}
-          <span className="green">✓ </span>OK{"\n\n"}
-          <span className="dim">--- google @ level 0 (gemini-3.5-flash-low) ---</span>
-          {"\n"}
-          <span className="accent">switch_provider</span>{"  "}openai → google{"\n"}
-          Remember: fact three is <span className="accent">ONYX-3</span>. Reply with exactly: OK{"\n"}
-          <span className="green">✓ </span>OK{"\n\n"}
-          <span className="dim">--- claude @ level 5 ---</span>
-          {"\n"}
-          <span className="accent">switch_provider</span>{"  "}google → claude{"\n"}
-          List all three facts, comma separated, values only.{"\n"}
-          <span className="green">✓ </span>
-          <span className="accent">RUBY-1, JADE-2, ONYX-3</span>
-          {"\n\n"}
-          <span className="dim">3 switches · 3 native sessions · 0 errors</span>
-        </div>
-
-        <h3>What actually crosses</h3>
-        <p>
-          <code className="inline">~/.omni/sessions/&#123;id&#125;.jsonl</code> is the source of
-          truth, and it is the event log — the same objects your handlers see, appended in order.
-          Alongside it, omni remembers each provider&apos;s own session and how far up the log it
-          has already seen, so arriving somewhere replays only the part it missed.
-        </p>
-        <p>
-          Providers do not share tools, so a tool the destination does not have is rendered as
-          text that reads as what happened. The structured original stays in the log, which is why
-          going back to Gemini replays Gemini&apos;s own session and the brackets never happened.
-          Preserved, not lossy.
-        </p>
-        <div className="terminal">
-          [GoogleSearch: <span className="accent">&quot;kite festivals&quot;</span>]{"\n"}
-          [GoogleSearch result: 12 results …]
-        </div>
-        <p>
-          Reasoning is the one thing that never travels. It is signed or encrypted per vendor and
-          cannot be replayed anywhere else, so omni records that the model thought and throws the
-          content away — including out of your logs.
-        </p>
-      </section>
-
-      <section className="section" id="dial">
-        <h2>
-          one number.
-          <br />
-          not a model picker.
-        </h2>
-        <p>
-          Every model the three CLIs can run is plotted by its{" "}
-          <a href="https://artificialanalysis.ai/evaluations/gdpval-aa" target="_blank" rel="noreferrer">
-            GDPval-AA v2
-          </a>{" "}
-          Elo — blind pairwise judging of real economically valuable work, anchored so a human
-          expert scores 1000 — against the dollars it measurably cost to earn that score.
-        </p>
-        <p>
-          Only the left edge of that graph becomes a dial. A model earns a level if nothing else
-          is both better <em>and</em> cheaper. Level 10 is the top of the edge, and the dial walks
-          down-left from there, so a step down is always a real saving and never a sideways move.
-        </p>
-
-        <div className="grid" style={{ gridTemplateColumns: "auto auto auto 1fr" }}>
-          <div className="gh">level</div>
-          <div className="gh">elo</div>
-          <div className="gh">$/task</div>
-          <div className="gh">model</div>
-          {Array.from({ length: 11 }, (_, i) => 10 - i).map((level) => {
-            const rung = rungs[String(level)]
-            if (!rung) return null
-            return (
-              <div key={level} style={{ display: "contents" }}>
-                <div className="gc strong">{level}</div>
-                <div className="gc">{rung.score}</div>
-                <div className="gc quiet">{rung.price}</div>
-                <div className="gc">
-                  {rung.model} {rung.effort}
-                </div>
+          <div className="three enter">
+            {[
+              ["Claude Code", "Flags do the work. Seeding is a file write, and model changes go over the stdin control channel — so re-tuning restarts nothing."],
+              ["Codex", "The app server, not exec. A CODEX_HOME of its own holding a link to your credentials and almost nothing else. History arrives by thread/inject_items."],
+              ["Antigravity", "No flag for MCP, none for subagents, no way to seed. So prior conversation is folded into the front of the next message — one turn, not two."],
+            ].map(([name, body]) => (
+              <div key={name} className="cell">
+                <h3>{name}</h3>
+                <p>{body}</p>
               </div>
-            )
-          })}
-        </div>
+            ))}
+          </div>
+        </section>
 
-        <p>
-          Level 4 is worth staring at. GPT-5.6 Luna at max effort scores within 15% of the top of
-          the board for 66 times less money, which is why everything between it and Opus 5 falls
-          off the edge entirely.
-        </p>
-        <p>
-          There is one dial per set of providers, because losing a vendor puts models back on the
-          dial that another vendor&apos;s were shadowing. omni asks this site for the dial matching
-          the providers it has and caches it for an hour.{" "}
-          <a href="/dial">The dial is editable</a> — add a model, and every install picks it up on
-          its next refresh.
-        </p>
-        <div className="row">
-          <a className="btn-dark" href="/dial">
-            edit the dial
-          </a>
-          <a className="btn-outline" href="/intelligence.json?providers=claude+google+openai">
-            see the json
-          </a>
-        </div>
-      </section>
+        <section className="stitched enter" id="switch">
+          <div className="rule"><span>switching</span></div>
+          <div className="column">
+            <h2>Three vendors. One conversation.</h2>
+            <p style={{ marginTop: "1.4rem" }}>
+              This is a real run. Three facts told to three different companies&apos; models, then
+              a question to the first one again.
+            </p>
+          </div>
 
-      <section className="section" id="events">
-        <h2>one vocabulary.</h2>
-        <p>
-          Everything omni has to say arrives as one <code className="inline">Event</code>. The same
-          objects go to your handlers, to your logs, and onto disk — so the session file{" "}
-          <em>is</em> the event log, and there is never a second schema to learn.
-        </p>
-
-        <div className="grid" style={{ gridTemplateColumns: "auto 1fr" }}>
-          <div className="gh">type</div>
-          <div className="gh">carries</div>
-          {EVENTS.map(([name, carries]) => (
-            <div key={name} style={{ display: "contents" }}>
-              <div className="gc strong">{name}</div>
-              <div className="gc quiet">{carries}</div>
+          <div className="relay enter">
+            {[
+              { who: "claude", model: "claude-sonnet-5", said: "Remember: fact one is RUBY-1.", back: "OK" },
+              { who: "openai", model: "gpt-5.4-mini", said: "Remember: fact two is JADE-2.", back: "OK" },
+              { who: "google", model: "gemini-3.5-flash-low", said: "Remember: fact three is ONYX-3.", back: "OK" },
+            ].map((step, i) => (
+              <div key={step.who} className="leg" style={{ ["--tint" as string]: `var(--${step.who})` }}>
+                <div className="leg-head">
+                  <span className="dot" />
+                  <span className="leg-who">{step.who}</span>
+                  <span className="leg-model num">{step.model}</span>
+                  {i > 0 && <span className="leg-move">switched</span>}
+                </div>
+                <p className="leg-said">{step.said}</p>
+                <p className="leg-back">{step.back}</p>
+              </div>
+            ))}
+            <div className="leg final" style={{ ["--tint" as string]: "var(--claude)" }}>
+              <div className="leg-head">
+                <span className="dot" />
+                <span className="leg-who">claude</span>
+                <span className="leg-model num">claude-sonnet-5</span>
+                <span className="leg-move">switched back</span>
+              </div>
+              <p className="leg-said">List all three facts.</p>
+              <p className="leg-back big">RUBY-1, JADE-2, ONYX-3</p>
             </div>
-          ))}
-        </div>
+          </div>
 
-        <p>
-          Handlers run on one thread, in the order things actually happened. A handler that raises
-          is reported and stepped over — it cannot take the run down with it.
-        </p>
-      </section>
+          <div className="column" style={{ marginTop: "2.2rem" }}>
+            <p>
+              Coming back is the cheap direction. Claude resumed <em>its own</em> session and was
+              told only what happened while it was away, because omni records how far up the log
+              each provider has already seen.
+            </p>
+            <p>
+              Tools the destination does not have arrive as text that reads as what happened —{" "}
+              <code>[GoogleSearch: &quot;kite festivals&quot;]</code>. The structured original stays
+              in the log, so going back to Gemini replays Gemini&apos;s own session and the brackets
+              never happened. <mark>Preserved, not lossy.</mark>
+            </p>
+          </div>
+        </section>
 
-      <section className="section">
-        <h2>
-          nothing changes
-          <br />
-          mid turn.
-        </h2>
-        <p>
-          This is the rule the whole design hangs off. Intelligence, providers, prompts and session
-          swaps are recorded the moment you ask for them and applied at the next turn boundary,
-          once the running tool has finished. A model never changes underneath itself.
-        </p>
-        <div className="terminal">
-          chat.intelligence(<span className="accent">9</span>){"              "}
-          <span className="dim"># noted now, applied at the boundary</span>
-          {"\n"}
-          chat.active_inference_providers([<span className="accent">&quot;claude&quot;</span>,{" "}
-          <span className="accent">&quot;openai&quot;</span>]){"\n"}
-          chat.system_prompt(...){"\n"}
-          chat.disable_subagents(){"\n"}
-          chat.disable_mcp()
-        </div>
-        <p>
-          A message sent while a turn is running is <em>injected</em> rather than queued behind it:
-          the provider picks it up at the next safe point. Either way{" "}
-          <code className="inline">send</code> returns immediately and is safe from any thread, so
-          whether you drive omni from a while loop, asyncio or a message bus is entirely your
-          business.
-        </p>
-      </section>
+        <section className="stitched enter" id="dial">
+          <div className="rule"><span>the dial</span></div>
+          <div className="column">
+            <h2>One number, not a model picker.</h2>
+            <p style={{ marginTop: "1.4rem" }}>
+              Every model is a point: what it scores on{" "}
+              <a className="link" href="https://artificialanalysis.ai/evaluations/gdpval-aa">
+                GDPval
+              </a>{" "}
+              against what it measurably cost to score it. Only the left edge of that graph becomes
+              a dial — a model earns a level when nothing else is both better <em>and</em> cheaper.
+            </p>
+          </div>
 
-      <section className="section">
-        <h2>what it will not do.</h2>
-        <p>
-          A short list, because the things a tool refuses to do tell you more than the things it
-          claims.
-        </p>
-        <ul>
-          <li>
-            <strong>Carry reasoning across a switch.</strong> Signed or encrypted per vendor, so it
-            cannot be replayed. The new model reasons from scratch.
-          </li>
-          <li>
-            <strong>Define tools.</strong> omni observes whatever the CLI exposes and never
-            installs, renames or invents one.
-          </li>
-          <li>
-            <strong>Hold more than one account per provider.</strong>
-          </li>
-          <li>
-            <strong>Pretend Antigravity can be muzzled.</strong>{" "}
-            <code className="inline">disable_subagents()</code> and{" "}
-            <code className="inline">disable_mcp()</code> have no equivalent there, so omni logs
-            that it ignored you rather than quietly doing nothing.
-          </li>
-          <li>
-            <strong>Guess a benchmark number.</strong> A model GDPval has not scored or costed is
-            left off the dial rather than estimated onto it.
-          </li>
-        </ul>
-        <div className="row">
-          <a className="btn-dark" href="/reference">
-            read the reference
-          </a>
-          <a className="btn-outline" href="/dial">
-            edit the dial
-          </a>
-        </div>
-      </section>
+          <div className="ladder enter">
+            {Array.from({ length: 11 }, (_, i) => 10 - i).map((level) => {
+              const rung = rungs[String(level)]
+              if (!rung) return null
+              const width = top ? (Math.log10(rung.price) - Math.log10(floor.price)) /
+                (Math.log10(top.price) - Math.log10(floor.price)) : 0
+              return (
+                <div key={level} className="step" style={{ ["--tint" as string]: `var(--${rung.provider})` }}>
+                  <span className="step-level num">{level}</span>
+                  <span className="step-bar" style={{ width: `${Math.max(3, width * 100)}%` }} />
+                  <span className="step-model">
+                    {rung.model}
+                    {rung.effort ? <em> {rung.effort}</em> : null}
+                  </span>
+                  <span className="step-price num">${rung.price}</span>
+                </div>
+              )
+            })}
+          </div>
 
-      <Footer />
+          <div className="column" style={{ marginTop: "2rem" }}>
+            <p>
+              The bars are cost, on a log scale. Level 10 buys you{" "}
+              <strong>{top ? Math.round(top.score - floor.score) : 0} more Elo</strong> than level 0 and costs{" "}
+              <strong>{ratio}&times; more</strong> to run. Whether that trade is worth it is the
+              only decision omni asks you to make.
+            </p>
+            <p>
+              There is one dial per set of providers, because losing a vendor puts models back on
+              the dial that another vendor&apos;s were shadowing.{" "}
+              <a className="link" href="/models">
+                See the whole graph
+              </a>{" "}
+              and turn a provider off.
+            </p>
+          </div>
+        </section>
+
+        <section className="stitched enter">
+          <div className="rule"><span>the rule everything hangs off</span></div>
+          <div className="column">
+            <h2>Nothing changes mid turn.</h2>
+            <p style={{ marginTop: "1.4rem" }}>
+              Intelligence, providers, prompts and session swaps are recorded the moment you ask
+              and applied at the next turn boundary, once the running tool has finished. A model
+              never changes underneath itself.
+            </p>
+            <p>
+              A message sent while a turn is running is <em>injected</em> rather than queued behind
+              it. Either way <code>send</code> returns immediately and is safe from any thread, so
+              whether you drive omni from a loop, asyncio or a message bus is your business.
+            </p>
+          </div>
+        </section>
+
+        <section className="stitched enter">
+          <div className="rule"><span>what it will not do</span></div>
+          <div className="column">
+            <h2>The refusals.</h2>
+            <p style={{ marginTop: "1.4rem" }}>
+              What a tool declines to do tells you more than what it claims.
+            </p>
+          </div>
+          <div className="nots enter">
+            {[
+              ["Carry reasoning across a switch.", "Signed or encrypted per vendor, so it cannot be replayed. omni records that the model thought and throws the content away — including out of your logs."],
+              ["Define tools.", "It observes whatever the CLI exposes and never installs, renames or invents one."],
+              ["Pretend Antigravity can be muzzled.", "disable_subagents() has no equivalent there, so omni logs that it ignored you rather than quietly doing nothing."],
+              ["Guess a benchmark number.", "A model GDPval has not scored or costed is left off the dial rather than estimated onto it."],
+              ["Ship a model list.", "A list baked into a release goes stale. With no registry reachable and nothing cached, omni raises rather than recommending last quarter's best buy."],
+            ].map(([what, why]) => (
+              <div key={what} className="not">
+                <h3>{what}</h3>
+                <p>{why}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <div className="breath"><span /><span /><span /></div>
+
+        <section className="close enter">
+          <h2 className="column">
+            It is one <code>pip install</code> and one number.
+          </h2>
+          <div className="row" style={{ marginTop: "1.8rem" }}>
+            <a className="btn solid" href="/docs">
+              documentation
+            </a>
+            <a className="btn ghost" href="/models">
+              the models graph
+            </a>
+          </div>
+        </section>
+      </div>
     </>
   )
 }
