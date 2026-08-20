@@ -1,3 +1,12 @@
+import {
+  ArrowRight,
+  ChartScatter,
+  Flag,
+  Prohibit,
+  PlugsConnected,
+  WarningDiamond,
+} from "@phosphor-icons/react/dist/ssr"
+
 import { Copy } from "./copy"
 import { Dither } from "./dither"
 import { dialFor } from "../lib/dial"
@@ -31,6 +40,7 @@ export default async function Landing() {
             <Copy text="pip install silicon-omni" />
             <a className="btn ghost" href="/docs">
               read the documentation
+              <ArrowRight size={14} weight="bold" />
             </a>
           </div>
           <p className="quiet rise" style={{ ["--i" as string]: 3, fontSize: 13, marginTop: "1.4rem" }}>
@@ -61,11 +71,12 @@ export default async function Landing() {
 
           <div className="three enter">
             {[
-              ["Claude Code", "Flags do the work. Seeding is a file write, and model changes go over the stdin control channel — so re-tuning restarts nothing."],
-              ["Codex", "The app server, not exec. A CODEX_HOME of its own holding a link to your credentials and almost nothing else. History arrives by thread/inject_items."],
-              ["Antigravity", "No flag for MCP, none for subagents, no way to seed. So prior conversation is folded into the front of the next message — one turn, not two."],
-            ].map(([name, body]) => (
-              <div key={name} className="cell">
+              { name: "Claude Code", icon: Flag, tint: "claude", body: "Flags do the work. Seeding is a file write, and model changes go over the stdin control channel — so re-tuning restarts nothing." },
+              { name: "Codex", icon: PlugsConnected, tint: "openai", body: "The app server, not exec. A CODEX_HOME of its own holding a link to your credentials and almost nothing else. History arrives by thread/inject_items." },
+              { name: "Antigravity", icon: WarningDiamond, tint: "google", body: "No flag for MCP, none for subagents, no way to seed. So prior conversation is folded into the front of the next message — one turn, not two." },
+            ].map(({ name, icon: Icon, tint, body }) => (
+              <div key={name} className="cell" style={{ ["--tint" as string]: `var(--${tint})` }}>
+                <Icon size={22} weight="duotone" className="cell-icon" />
                 <h3>{name}</h3>
                 <p>{body}</p>
               </div>
@@ -213,8 +224,11 @@ export default async function Landing() {
               ["Ship a model list.", "A list baked into a release goes stale. With no registry reachable and nothing cached, omni raises rather than recommending last quarter's best buy."],
             ].map(([what, why]) => (
               <div key={what} className="not">
-                <h3>{what}</h3>
-                <p>{why}</p>
+                <Prohibit size={17} weight="bold" className="not-icon" />
+                <div>
+                  <h3>{what}</h3>
+                  <p>{why}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -229,8 +243,10 @@ export default async function Landing() {
           <div className="row" style={{ marginTop: "1.8rem" }}>
             <a className="btn solid" href="/docs">
               documentation
+              <ArrowRight size={14} weight="bold" />
             </a>
             <a className="btn ghost" href="/models">
+              <ChartScatter size={15} weight="bold" />
               the models graph
             </a>
           </div>

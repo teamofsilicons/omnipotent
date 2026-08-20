@@ -1,5 +1,17 @@
 "use client"
 
+import {
+  Broadcast,
+  ChatCircleDots,
+  Database,
+  Door,
+  DownloadSimple,
+  Files,
+  Gauge,
+  Key,
+  Wrench,
+  Eye,
+} from "@phosphor-icons/react/dist/ssr"
 import { useEffect, useState } from "react"
 
 import { Copy } from "../copy"
@@ -13,6 +25,17 @@ import { SECTIONS } from "./content"
  * same list with a second paragraph revealed, so what a call does and what it
  * turns into stay side by side.
  */
+
+const ICONS: Record<string, React.ComponentType<{ size?: number; weight?: "bold" | "duotone" }>> = {
+  DownloadSimple,
+  Door,
+  ChatCircleDots,
+  Broadcast,
+  Files,
+  Key,
+  Gauge,
+  Database,
+}
 
 export function Docs() {
   const [inside, setInside] = useState(false)
@@ -40,6 +63,10 @@ export function Docs() {
           {SECTIONS.map((s) => (
             <li key={s.id}>
               <a href={`#${s.id}`} className={here === s.id ? "here" : undefined}>
+                {(() => {
+                  const Icon = ICONS[s.icon]
+                  return Icon ? <Icon size={15} weight="bold" /> : null
+                })()}
                 {s.title}
               </a>
             </li>
@@ -48,9 +75,11 @@ export function Docs() {
         <div className="toc-switch">
           <div className="switch" role="tablist">
             <button className={inside ? undefined : "on"} onClick={() => setInside(false)} role="tab">
+              <Eye size={13} weight="bold" />
               surface
             </button>
             <button className={inside ? "on" : undefined} onClick={() => setInside(true)} role="tab">
+              <Wrench size={13} weight="bold" />
               internal
             </button>
           </div>
@@ -72,6 +101,10 @@ export function Docs() {
         {SECTIONS.map((section) => (
           <section key={section.id} id={section.id} className="doc-section enter">
             <div className="rule">
+              {(() => {
+                const Icon = ICONS[section.icon]
+                return Icon ? <Icon size={14} weight="bold" /> : null
+              })()}
               <span>{section.title.toLowerCase()}</span>
             </div>
             <p className="doc-blurb"><Ticks>{section.blurb}</Ticks></p>
