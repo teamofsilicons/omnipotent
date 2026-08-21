@@ -70,16 +70,21 @@ export function Field({ points }: { points: Rung[] }) {
     if (!el) return
     const watch = new ResizeObserver(([entry]) => {
       const r = entry.contentRect
-      setBox({ w: Math.max(320, Math.round(r.width)), h: Math.max(300, Math.round(r.height)) })
+      /* Floors only to survive a zero-sized first paint. Anything higher and
+         the state stops describing the element it was measured from. */
+      setBox({ w: Math.max(240, Math.round(r.width)), h: Math.max(200, Math.round(r.height)) })
     })
     watch.observe(el)
     return () => watch.disconnect()
   }, [])
 
   const wide = box.w > 760
+  /* Gutters wide enough for a level disc and nothing more. Every label that
+     used to live out here now sits inside the plot, faint, so the data can
+     start at one edge of the screen and finish at the other. */
   const pad = wide
-    ? { top: 64, right: 54, bottom: 62, left: 62 }
-    : { top: 34, right: 26, bottom: 52, left: 40 }
+    ? { top: 52, right: 18, bottom: 46, left: 18 }
+    : { top: 30, right: 14, bottom: 40, left: 14 }
 
   const walk = useMemo(() => edge(points), [points])
   const rungs = useMemo(() => ladderOf(walk), [walk])
@@ -192,8 +197,8 @@ export function Field({ points }: { points: Rung[] }) {
   const dominated = useMemo(() => {
     if (walk.length < 2) return ""
     const bottom = box.h - pad.bottom
-    const left = pad.left - 14
-    const right = box.w - pad.right
+    const left = 0
+    const right = box.w
     const floorLevel = walk[walk.length - 1]
     return (
       stairFrom(walk, atX, atY) +
@@ -307,6 +312,11 @@ export function Field({ points }: { points: Rung[] }) {
       <svg
         className="field-svg"
         viewBox={`0 0 ${box.w} ${box.h}`}
+        /* The viewBox is the measured box, so it must map onto the element 1:1.
+           Left to `meet`, any disagreement between the two — a clamped floor, a
+           frame of lag — shrinks the whole chart and centres it, which is how
+           an edge-to-edge plot ends up with a band down each side. */
+        preserveAspectRatio="none"
         role="img"
         aria-label={`${points.length} models omni can run, plotted by cost against score. ${walk.length} of them are on the dial.`}
       >
@@ -322,46 +332,56 @@ export function Field({ points }: { points: Rung[] }) {
           </linearGradient>
         </defs>
 
-        {decades.map((t) => (
-          <g key={t}>
-            <line
-              x1={atX(t)}
-              x2={atX(t)}
-              y1={pad.top - 14}
-              y2={box.h - pad.bottom}
-              className="field-grid"
-            />
-            <text x={atX(t)} y={pad.top - 22} className="field-tick mid">
-              {money(t)}
-            </text>
-          </g>
-        ))}
+        {decades.map((t, i) => {
+          /* The first and last labels anchor inward. Centred on a line that is
+             itself at the edge of the screen, half the label would be off it. */
+          const end = i === decades.length - 1
+          return (
+            <g key={t}>
+              <line
+                x1={atX(t)}
+                x2={atX(t)}
+                y1={pad.top - 14}
+                y2={box.h - pad.bottom}
+                className="field-grid"
+              />
+              <text
+                x={atX(t) + (i === 0 ? 4 : end ? -4 : 0)}
+                y={pad.top - 20}
+                className={`field-tick${i === 0 || end ? "" : " mid"}`}
+                textAnchor={i === 0 ? "start" : end ? "end" : undefined}
+              >
+                {money(t)}
+              </text>
+            </g>
+          )
+        })}
 
         {/* anchored so a human expert scores 1000. the most quotable line on
             the chart, and it costs one dashed rule */}
         {bounds.y0 < 1000 && bounds.y1 > 1000 && (
           <g>
             <line
-              x1={pad.left - 18}
-              x2={box.w - pad.right}
+              x1={0}
+              x2={box.w}
               y1={atY(1000)}
               y2={atY(1000)}
               className="field-human"
             />
-            <text x={pad.left - 14} y={atY(1000) - 9} className="field-tick">
+            <text x={13} y={atY(1000) - 9} className="field-tick">
               1000 — a human expert
             </text>
           </g>
         )}
 
         {wide && (
-          <text x={pad.left - 18} y={pad.top - 22} className="field-axis">
+          <text x={13} y={pad.top - 20} className="field-axis">
             cost per task →
           </text>
         )}
         <text
           className="field-axis"
-          transform={`translate(${pad.left - 20} ${pad.top + (box.h - pad.top - pad.bottom) / 2}) rotate(-90)`}
+          transform={`translate(13 ${pad.top + (box.h - pad.top - pad.bottom) / 2}) rotate(-90)`}
           textAnchor="middle"
         >
           gdpval elo →

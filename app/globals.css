@@ -2488,7 +2488,7 @@ html, body { overflow-x: clip; }
    height, so on a 13-inch screen the chart is what has to give. */
 @media (max-height: 860px) and (min-width: 901px) {
   .hero { padding-top: clamp(1.4rem, 3.5vh, 2.4rem); padding-bottom: 1rem; }
-  .plot { height: min(44vh, 400px); min-height: 300px; }
+  .plot { height: min(56vh, 500px); min-height: 340px; }
 }
 
 /* A rung that has been moved off its own coordinate keeps a line back to it. */
