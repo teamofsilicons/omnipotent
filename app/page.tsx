@@ -274,7 +274,7 @@ export default async function Landing() {
               Benedict gave the kitchen a week at a time, and gave the changeover to both men at
               once: the server going off washes up and returns the utensils to the cellarer, who
               hands them to the server coming on,{" "}
-              <a className="link" href="https://www.gutenberg.org/cache/epub/50040/pg50040.txt">
+              <a className="link" href="https://www.gutenberg.org/files/50040/50040-h/50040-h.htm#Chapter_35">
                 in order that he may know what he gives out and what he receives back
               </a>
               . The second file is the cellarer&apos;s list.
@@ -340,7 +340,7 @@ export default async function Landing() {
             </p>
             <p className="set">
               When a bob is called, the bells in fourth and fifth place ring on{" "}
-              <a className="link" href="https://archive.org/stream/changeringingan00troygoog/changeringingan00troygoog_djvu.txt">
+              <a className="link" href="https://archive.org/details/changeringingan00troygoog">
                 as if no calling had been made
               </a>
               . Coming back, so does the provider.
