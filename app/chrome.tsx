@@ -65,6 +65,8 @@ export function Chrome({ children }: { children: React.ReactNode }) {
           <a href="/models">models</a>
           <a href="/intelligence.json">the dial, as json</a>
           <a href="https://github.com/teamofsilicons/silicon-omni">library</a>
+          <a href="https://pypi.org/project/silicon-omni/">pypi</a>
+          <a href="https://github.com/teamofsilicons/silicon-omni/blob/main/CHANGELOG.md">changelog</a>
           <a href="https://github.com/teamofsilicons/omnipotent">this site</a>
           <a href="https://artificialanalysis.ai/evaluations/gdpval-aa">gdpval</a>
         </div>
