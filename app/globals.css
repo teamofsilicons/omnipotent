@@ -280,31 +280,82 @@ code {
 
 /* ------------------------------------------------------------------- chrome */
 
+/* Two islands and nothing between them.
+
+   A full-width bar with a blur behind it puts a pane of frosted glass over the
+   middle of the page, where the page is. These are two small floating things
+   at the two edges instead: each carries its own paper, its own hairline and
+   its own shadow, and the space between them shows whatever is underneath. */
+
 .top {
   position: sticky;
   top: 0;
   z-index: 20;
   display: flex;
-  align-items: baseline;
-  gap: 1.6rem;
-  padding: 1.1rem 1.5rem;
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid transparent;
-  transition: border-color var(--quick);
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .8rem clamp(.8rem, 2vw, 1.5rem);
+  background: none;
+  pointer-events: none;
 }
 
-.top.stuck { border-bottom-color: var(--ink-06); }
-.top .wordmark { color: var(--ink); font-variation-settings: "wght" 620; letter-spacing: -.02em; }
-.top nav { display: flex; gap: 1.3rem; margin-left: auto; font-size: 14px; }
+.top .wordmark,
+.top nav {
+  pointer-events: auto;
+  background: color-mix(in srgb, var(--paper) 76%, transparent);
+  backdrop-filter: blur(12px) saturate(1.25);
+  -webkit-backdrop-filter: blur(12px) saturate(1.25);
+  box-shadow:
+    inset 0 0 0 1.5px var(--ink-10),
+    0 1px 2px rgba(26, 26, 26, .035),
+    0 8px 24px -16px rgba(26, 26, 26, .22);
+  border-radius: var(--r);
+  transition: box-shadow var(--snappy), background var(--quick);
+}
+
+.top .wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: .52rem;
+  padding: .52rem .78rem;
+  color: var(--ink);
+  font-size: 15px;
+  font-variation-settings: "wght" 620;
+  letter-spacing: -.02em;
+  white-space: nowrap;
+}
+
+.top .wordmark .mark { color: var(--ink); transform: translateY(-.5px); }
+
+.top nav {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  margin-left: auto;
+  padding: .52rem .9rem;
+  font-size: 14px;
+}
+
+/* Once the page has moved under them, the islands lift a little further off it. */
+.top.stuck .wordmark,
+.top.stuck nav {
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  box-shadow:
+    inset 0 0 0 1.5px var(--ink-18),
+    0 1px 2px rgba(26, 26, 26, .05),
+    0 12px 30px -18px rgba(26, 26, 26, .3);
+}
 
 .top nav a {
   color: var(--ink-62);
   font-variation-settings: "wght" 440;
   transition: color var(--quick), font-variation-settings var(--snappy);
+  white-space: nowrap;
 }
 
-.top nav a:hover, .top nav a[data-here] {
+.top nav a:hover,
+.top nav a[data-here] {
   color: var(--ink);
   font-variation-settings: "wght" 560;
 }
@@ -389,25 +440,29 @@ pre code { background: none; padding: 0; font-size: inherit; }
 @media (max-width: 720px) {
   body { font-size: 16px; }
   .shell { padding: 0 1.1rem; }
-  .top { gap: 1rem; padding: .9rem 1.1rem; }
-  .top nav { gap: .9rem; }
+  .top { gap: .7rem; padding: .7rem 1rem; }
+  .top nav { gap: .9rem; padding: .48rem .75rem; }
 }
 
 /* Four links and a wordmark do not fit on a phone. Rather than hide a page,
    the nav scrolls: everything stays reachable and nothing wraps. */
+/* On a phone the two islands will not both fit, so the nav becomes the island
+   and the wordmark shrinks to its mark. Everything stays reachable. */
 @media (max-width: 620px) {
-  .top { gap: .8rem; padding: .8rem .9rem; align-items: center; }
-  .top .wordmark { white-space: nowrap; font-size: 14px; }
+  .top { gap: .5rem; padding: .6rem .7rem; }
+  .top .wordmark { font-size: 0; gap: 0; padding: .55rem .6rem; }
+  .top .wordmark .mark { width: 30px; height: 11px; }
   .top nav {
-    gap: .9rem;
+    gap: .85rem;
+    min-width: 0;
+    padding: .5rem .7rem;
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    mask-image: linear-gradient(to right, #000 88%, transparent);
-    padding-right: 1.2rem;
+    mask-image: linear-gradient(to right, #000 86%, transparent);
   }
   .top nav::-webkit-scrollbar { display: none; }
-  .top nav a { white-space: nowrap; font-size: 13px; }
+  .top nav a { white-space: nowrap; font-size: 12.5px; }
 }
 
 
@@ -456,18 +511,19 @@ pre code { background: none; padding: 0; font-size: inherit; }
   mask-image: radial-gradient(100% 100% at 88% 8%, #000 4%, transparent 62%);
 }
 
-/* Behind the whole field, at the opacity where you read texture and not dots.
-   The plates are printed through the same matrix, so this is the page telling
-   you early what kind of surface it thinks it is. */
+/* A corner accent, at the opacity where you read texture and not dots. The
+   plates are printed through the same matrix, so this is the page saying early
+   what kind of surface it thinks it is.
+
+   Bounded on purpose. It used to be `height: 100%` of whatever section it sat
+   in, which on a tall page meant a forty-rem column of pattern sitting behind
+   the paragraphs with a visible edge down one side of them. */
 .dither.wash {
-  inset: 0 auto 0 0;
-  top: 0;
-  right: auto;
-  left: 0;
-  width: min(44rem, 48vw);
-  height: 100%;
-  opacity: .075;
-  mask-image: radial-gradient(105% 80% at 2% 0%, #000 0%, transparent 58%);
+  inset: 0 auto auto 0;
+  width: min(40rem, 46vw);
+  height: min(26rem, 42vh);
+  opacity: .07;
+  mask-image: radial-gradient(100% 100% at 0% 0%, #000 0%, transparent 72%);
 }
 
 .dither canvas { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
@@ -593,31 +649,51 @@ pre code { background: none; padding: 0; font-size: inherit; }
 .graph-hint { color: var(--ink-48); }
 
 /* --------------------------------------------------------------- doc panes */
+/* A button group, not a pill in a pill.
 
-/* Swapping the internal view is a morph, not a cut. */
+   This was a rounded button, inside 2px of padding, inside a rounded track,
+   inside a ring — three radii and two backgrounds to say one binary thing, and
+   at a 4px ceiling the nesting had nowhere left to go. One outline round the
+   pair, one hairline between them, and the chosen side is ink. The inner
+   corners are square, which is what a concentric radius comes to when the gap
+   between parent and child is zero. */
+
 .switch {
   display: inline-flex;
-  gap: 2px;
-  padding: 2px;
-  border-radius: var(--r-2);
-  box-shadow: var(--ring);
-  background: var(--ink-03);
+  padding: 0;
+  background: var(--paper);
+  border: 1.5px solid var(--ink-18);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: none;
 }
 
 .switch button {
   font-family: var(--sans);
-  font-size: 12px;
-  color: var(--ink-48);
+  font-size: 12.5px;
+  color: var(--ink-62);
   background: none;
   border: 0;
-  border-radius: var(--r-2);
-  padding: .28rem .8rem;
+  border-radius: 0;
+  padding: .44rem .85rem;
   cursor: pointer;
+  box-shadow: none;
   transition: color var(--quick), background var(--quick);
-  font-variation-settings: "wght" 460;
+  font-variation-settings: "wght" 480;
 }
 
-.switch button.on { background: var(--raised); color: var(--ink); box-shadow: var(--ring); font-variation-settings: "wght" 560; }
+.switch button + button { border-left: 1.5px solid var(--ink-18); }
+.switch button:hover { background: var(--ink-03); color: var(--ink); }
+
+.switch button.on {
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: none;
+  font-variation-settings: "wght" 560;
+}
+
+.switch button.on:hover { background: #000; }
+.switch button:focus-visible { outline-offset: -3px; }
 
 /* ----------------------------------------------------------------- landing */
 
@@ -777,8 +853,8 @@ pre code { background: none; padding: 0; font-size: inherit; }
 .not-icon { color: var(--ink-34); flex: none; margin-top: .22rem; }
 
 .switch button { display: inline-flex; align-items: center; gap: .35rem; }
-.switch button svg { opacity: .55; }
-.switch button.on svg { opacity: 1; }
+.switch button svg { opacity: .5; }
+.switch button.on svg { opacity: .85; }
 
 .copy { display: inline-flex; align-items: center; gap: .3rem; }
 .btn svg { flex: none; }
@@ -1017,52 +1093,64 @@ html, body { overflow-x: clip; }
 
 /* ==================================================================== hero
 
-   The type stands in the lower right because on this particular graph the
-   lower right is dear and weak, and nothing is ever both. The field masks a
-   hole for it rather than the type sitting on top of the data. Stacked on a
-   phone the two never meet, so the hole closes.                            */
+   Two bands. The type used to sit on top of the chart in a hole the chart
+   masked out of itself, which works exactly as long as the sentence stays the
+   height it was when the hole was cut. A headline's height and a frontier's
+   shape are independent variables, and asking them to miss each other was a
+   bet rather than a layout.
+
+   So: an editorial split for the words — the same one every chapter uses — and
+   then the chart, full bleed, with the whole width the log axis wants.        */
 
 .hero {
   position: relative;
-  display: grid;
-  grid-template-areas: "stack";
-  min-height: min(86svh, 780px);
-  padding: .9rem 0 0;
+  overflow: hidden;
+  padding: clamp(2rem, 5vh, 3.4rem) 0 clamp(1.1rem, 2.4vh, 1.9rem);
 }
 
-.hero-plot,
-.hero-say { grid-area: stack; }
+.hero-shell { max-width: 76rem; }
 
-.hero-plot { min-width: 0; padding: 0 clamp(1.1rem, 3.2vw, 2.6rem); }
-
-.hero-say {
-  z-index: 2;
-  align-self: end;
-  justify-self: end;
-  width: min(35rem, 58%);
-  margin: 0 clamp(1.1rem, 3.2vw, 2.6rem) 4.4rem 0;
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 4rem);
+  align-items: start;
 }
 
 .hero h1 {
-  font-size: clamp(2.3rem, 3.9vw, 3.5rem);
-  line-height: 1.02;
-  letter-spacing: -.038em;
-  text-wrap: pretty;
+  font-size: clamp(2.4rem, 4.9vw, 4.1rem);
+  line-height: .98;
+  letter-spacing: -.042em;
+  text-wrap: balance;
 }
 
-.hero .lede { margin-top: 1.1rem; font-size: clamp(1rem, 1.35vw, 1.14rem); }
+.hero-side { max-width: 34rem; }
+.hero-side .lede { margin-top: .35rem; }
+
+.hero-own {
+  margin: .95rem 0 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-48);
+  max-width: 30rem;
+}
+
+/* The chart, given the room it was always asking for — and sized so that its
+   readout is above the fold on a laptop. The readout is the whole reward for
+   touching a dot; a chart whose answer is off-screen is a chart nobody asks. */
+.plot {
+  height: min(48vh, 440px);
+  min-height: 330px;
+  margin-top: 0;
+  padding: 1.1rem clamp(1.1rem, 3.2vw, 2.6rem) 0;
+  border-top: 1.5px solid var(--ink-10);
+}
 
 @media (max-width: 900px) {
-  .hero {
-    grid-template-areas: "say" "plot";
-    grid-template-rows: auto 1fr;
-    min-height: auto;
-    gap: 2.2rem;
-  }
-  .hero-say { grid-area: say; width: auto; justify-self: stretch; margin: 0; padding: 0 1.1rem; }
-  .hero-plot { grid-area: plot; height: 64vh; min-height: 400px; padding: 0 1.1rem; }
+  .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 1.3rem; }
+  .hero h1 { font-size: clamp(2.2rem, 8.5vw, 2.9rem); }
+  .plot { height: 60vh; min-height: 340px; }
 }
-
 
 /* ================================================================= chapters
 
@@ -1690,14 +1778,6 @@ html, body { overflow-x: clip; }
 .mark { display: block; flex: none; }
 .mark.over circle { mix-blend-mode: multiply; }
 
-.top .wordmark {
-  display: inline-flex;
-  align-items: center;
-  gap: .52rem;
-}
-
-.top .wordmark .mark { color: var(--ink); transform: translateY(-.5px); }
-.top .wordmark { font-size: 15px; }
 
 /* The section break. Not three dots in a row — the mark, at reading size, in
    the one place a page is allowed to breathe. */
@@ -1993,12 +2073,7 @@ html, body { overflow-x: clip; }
 .docs-body { max-width: 44rem; }
 .docs-body h1 { font-size: clamp(2.1rem, 3.9vw, 3.1rem); }
 
-.docs .dither.wash {
-  width: min(34rem, 40vw);
-  height: 22rem;
-  opacity: .085;
-  mask-image: radial-gradient(110% 90% at 4% 0%, #000 0%, transparent 64%);
-}
+.docs .dither.wash { width: min(30rem, 36vw); height: min(20rem, 34vh); opacity: .06; }
 
 .release { font-size: .26em; vertical-align: .55em; border-radius: var(--r-2); }
 
@@ -2319,4 +2394,11 @@ html, body { overflow-x: clip; }
   .rows th, .rows td { padding-right: .7rem; }
   .credits th:nth-child(3), .credits td:nth-child(3) { display: none; }
   .rows.wide th:nth-child(4), .rows.wide td:nth-child(4) { display: none; }
+}
+
+/* A short laptop. The headline's height is set by the viewport's width, not its
+   height, so on a 13-inch screen the chart is what has to give. */
+@media (max-height: 860px) and (min-width: 901px) {
+  .hero { padding-top: clamp(1.4rem, 3.5vh, 2.4rem); padding-bottom: 1rem; }
+  .plot { height: min(44vh, 400px); min-height: 300px; }
 }

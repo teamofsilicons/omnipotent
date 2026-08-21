@@ -79,6 +79,15 @@ export function Dither({
           }
           value = Math.pow(Math.max(0, value), 1.9) * weight
 
+          // Die out before the canvas does. A CSS mask fades the element, but
+          // the element still ends somewhere, and a 1-bit pattern that is still
+          // firing when it gets there reads as a cropped rectangle rather than
+          // as texture. This makes the last fifth of every edge fall to zero,
+          // so the container cannot crop what is no longer being drawn.
+          const fade = (a: number, span: number) => Math.min(1, a / Math.max(1, span))
+          value *=
+            fade(Math.min(x, w - 1 - x), w * 0.2) * fade(Math.min(y, h - 1 - y), h * 0.2)
+
           // Bayer: compare against a threshold that varies per cell, so a
           // constant value becomes a regular pattern rather than a flat block
           const threshold = (BAYER[y & 7][x & 7] + 0.5) / 64

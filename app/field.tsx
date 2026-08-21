@@ -275,19 +275,6 @@ export function Field({ points }: { points: Rung[] }) {
             <stop offset="80%" stopColor="#f15347" />
             <stop offset="100%" stopColor="#14245f" />
           </linearGradient>
-          {/* The sentence pushes the data aside rather than sitting on top of
-              it. The headline lives in the lower right because that corner of
-              this particular graph is dear and weak, and nothing is ever both
-              — so the type is standing in the one place the data cannot go.
-              Stacked on a phone the two never overlap, so the hole closes. */}
-          <radialGradient id="room" cx={wide ? "0.73" : "0.5"} cy={wide ? "0.79" : "1.6"} r={wide ? "0.32" : "0.02"}>
-            <stop offset="0%" stopColor="#000" />
-            <stop offset="52%" stopColor="#3a3a3a" />
-            <stop offset="100%" stopColor="#fff" />
-          </radialGradient>
-          <mask id="make-room">
-            <rect width={box.w} height={box.h} fill="url(#room)" />
-          </mask>
         </defs>
 
         {decades.map((t) => (
@@ -309,11 +296,9 @@ export function Field({ points }: { points: Rung[] }) {
             the chart, and it costs one dashed rule */}
         {bounds.y0 < 1000 && bounds.y1 > 1000 && (
           <g>
-            {/* stopped short of the headline: a rule that runs under a
-                sentence is a rule arguing with it */}
             <line
               x1={pad.left - 18}
-              x2={wide ? box.w * 0.58 : box.w - pad.right}
+              x2={box.w - pad.right}
               y1={atY(1000)}
               y2={atY(1000)}
               className="field-human"
@@ -326,7 +311,7 @@ export function Field({ points }: { points: Rung[] }) {
 
         {wide && (
           <text x={pad.left - 18} y={pad.top - 22} className="field-axis">
-            cost per task
+            cost per task →
           </text>
         )}
         <text
@@ -337,7 +322,7 @@ export function Field({ points }: { points: Rung[] }) {
           gdpval elo →
         </text>
 
-        <g mask="url(#make-room)">
+        <g>
           {inside.map((p) => (
             <circle
               key={key(p)}
@@ -370,7 +355,7 @@ export function Field({ points }: { points: Rung[] }) {
             </text>
             <text
               x={atX(walk[walk.length - 1].price) + 26}
-              y={box.h - pad.bottom - 16}
+              y={box.h - pad.bottom - 14}
               className="field-void beaten"
             >
               {points.length - walk.length} models live in here, every one of them beaten on both counts

@@ -79,35 +79,47 @@ export default async function Landing() {
 
   return (
     <>
+      {/* Two bands, not an overlay.
+          The type used to sit on top of the chart, in a hole the chart masked
+          out of itself. That only works while the sentence stays the height it
+          was when the hole was cut — and the sentence is copy, so it doesn't.
+          A headline's height and a frontier's shape are independent variables;
+          asking them to miss each other was a bet, and it lost. */}
       <section className="hero">
         <Dither shape="radial" cells={210} />
-        <div className="hero-plot">
-          <Field points={points} />
-        </div>
-        <div className="hero-say">
-          <h1 className="rise">
-            The conversation is yours.
-            <br />
-            The vendor is a&nbsp;setting.
-          </h1>
-          <p className="lede rise" style={{ ["--i" as string]: 1 }}>
-            silicon omni drives Claude Code, Codex and Antigravity from one Python object, on the
-            subscriptions you already pay for. Move the dial from 7 to 4 and the same chat finishes
-            on another company&apos;s model, with everything said before it already in its head.
-          </p>
-          <p className="rise quiet" style={{ ["--i" as string]: 2, marginTop: ".95rem", fontSize: 13.5, lineHeight: 1.55 }}>
-            It holds no API key. It signs in as you, on consumer plans, under terms that were not
-            written with a Python library in mind.
-          </p>
-          <div className="row rise" style={{ ["--i" as string]: 3, marginTop: "1.5rem" }}>
-            <code className="install">pip install silicon-omni</code>
-            <Copy text="pip install silicon-omni" />
-            <a className="btn ghost" href="/docs">
-              documentation
-              <ArrowRight size={14} weight="bold" />
-            </a>
+        <div className="shell hero-shell">
+          <div className="hero-grid">
+            <h1 className="rise">
+              The conversation is yours.
+              <br />
+              The vendor is a&nbsp;setting.
+            </h1>
+            <div className="hero-side">
+              <p className="lede rise" style={{ ["--i" as string]: 1 }}>
+                silicon omni drives Claude Code, Codex and Antigravity from one Python object, on
+                the subscriptions you already pay for. Move the dial from 7 to 4 and the same chat
+                finishes on another company&apos;s model, with everything said before it already in
+                its head.
+              </p>
+              <p className="hero-own rise" style={{ ["--i" as string]: 2 }}>
+                It holds no API key. It signs in as you, on consumer plans, under terms that were
+                not written with a Python library in mind.
+              </p>
+              <div className="row rise" style={{ ["--i" as string]: 3, marginTop: "1.4rem" }}>
+                <code className="install">pip install silicon-omni</code>
+                <Copy text="pip install silicon-omni" />
+                <a className="btn ghost" href="/docs">
+                  documentation
+                  <ArrowRight size={14} weight="bold" />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
+      </section>
+
+      <section className="plot">
+        <Field points={points} />
       </section>
 
       <div className="shell rails">

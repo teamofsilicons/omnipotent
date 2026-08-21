@@ -48,9 +48,9 @@ export function Chrome({ children }: { children: React.ReactNode }) {
         skip to the page
       </a>
       <header className={`top${stuck ? " stuck" : ""}`}>
-        <a href="/" className="wordmark">
+        <a href="/" className="wordmark" aria-label="silicon omni, home">
           <Mark h={14} />
-          silicon omni
+          <span>silicon omni</span>
         </a>
         <nav>
           {PLACES.map((place) => (
