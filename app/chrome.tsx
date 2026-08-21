@@ -33,6 +33,12 @@ export function Chrome({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
   const strip = useRef<HTMLDivElement>(null)
   const [pill, setPill] = useState<{ x: number; w: number } | null>(null)
+  /** the item the pointer is over, if any. The indicator follows it. */
+  const [over, setOver] = useState<string | null>(null)
+  /** whether there is anything to point at right now */
+  const [want, setWant] = useState(false)
+  /** one tick behind `want`, so the indicator can fade rather than appear */
+  const [shown, setShown] = useState(false)
 
   useEffect(() => {
     const watch = () => setStuck(window.scrollY > 8)
@@ -41,24 +47,38 @@ export function Chrome({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("scroll", watch)
   }, [])
 
-  /* Measure the active link and park the indicator on it. Re-measured on
-     resize, because the labels are words and words rewrap. */
-  const place = useCallback(() => {
+  /* One object that moves.
+     The indicator parks on the current page, follows the pointer while it is
+     over the strip, and goes back when it leaves. With nothing to point at it
+     stays where it is and fades — so on a page that is not in the strip it
+     fades in under the first item the pointer reaches, and only then slides.
+     Never a fly-in from the left edge. */
+  const place = useCallback((target?: string | null) => {
     const box = strip.current
     if (!box) return
-    const on = box.querySelector<HTMLElement>("a[data-here]")
-    if (!on) return setPill(null)
-    setPill({ x: on.offsetLeft, w: on.offsetWidth })
+    const on = target
+      ? box.querySelector<HTMLElement>(`a[href="${target}"]`)
+      : box.querySelector<HTMLElement>("a[data-here]")
+    setWant(!!on)
+    if (on) setPill({ x: on.offsetLeft, w: on.offsetWidth })
   }, [])
 
   useEffect(() => {
-    place()
-    const again = () => place()
+    place(over)
+    const again = () => place(over)
     window.addEventListener("resize", again)
     const fonts = (document as Document & { fonts?: FontFaceSet }).fonts
     fonts?.ready.then(again)
     return () => window.removeEventListener("resize", again)
-  }, [place, here])
+  }, [place, here, over])
+
+  /* A frame's grace between mounting the indicator and lighting it, so the
+     opacity has somewhere to travel from. */
+  useEffect(() => {
+    if (!want) return setShown(false)
+    const t = setTimeout(() => setShown(true), 40)
+    return () => clearTimeout(t)
+  }, [want, pill])
 
   useEffect(() => setOpen(false), [here])
 
@@ -96,14 +116,19 @@ export function Chrome({ children }: { children: React.ReactNode }) {
         </a>
 
         <nav className="places" aria-label="pages">
-          <div className="strip" ref={strip}>
+          <div className="strip" ref={strip} onPointerLeave={() => setOver(null)}>
             {pill && (
-              <span className="strip-pill" style={{ transform: `translateX(${pill.x}px)`, width: pill.w }} aria-hidden />
+              <span
+                className={`strip-pill${shown ? " shown" : ""}`}
+                style={{ transform: `translateX(${pill.x}px)`, width: pill.w }}
+                aria-hidden
+              />
             )}
             {HERE.map((place) => (
               <a
                 key={place.href}
                 href={place.href}
+                onPointerEnter={() => setOver(place.href)}
                 {...(mark(place.href) ? { "data-here": "", "aria-current": "page" as const } : {})}
               >
                 {place.label}

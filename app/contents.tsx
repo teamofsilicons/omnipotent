@@ -13,6 +13,7 @@
  */
 
 import { sample } from "../lib/ramp"
+import { Tokens } from "./code"
 
 /* Laid out for a 470x132 window, so it fills the wide tile at its own aspect
    rather than being stretched to fit one. Down at the old price, then left at
@@ -98,12 +99,12 @@ function MiniTape() {
 
 function MiniCode() {
   return (
-    <pre className="mini-code">{`from omni import Inference
+    <pre className="mini-code"><Tokens>{`from omni import Inference
 
 chat = Inference.load_or_create_session("triage")
 chat.intelligence(7)
 chat.start()
-chat.send("what changed today?")`}</pre>
+chat.send("what changed today?")`}</Tokens></pre>
   )
 }
 

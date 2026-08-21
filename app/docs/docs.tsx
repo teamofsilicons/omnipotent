@@ -15,12 +15,12 @@ import {
 } from "@phosphor-icons/react/dist/ssr"
 import { useEffect, useState } from "react"
 
-import { Copy } from "../copy"
 import { Dither } from "../dither"
 import { Mark } from "../mark"
 import { sample } from "../../lib/ramp"
 import { Ticks } from "../ticks"
 import { SECTIONS } from "./content"
+import { Code } from "../code"
 
 /**
  * The reference, with an optional second layer.
@@ -141,12 +141,7 @@ export function Docs() {
             <p className="doc-blurb"><Ticks>{section.blurb}</Ticks></p>
 
             {section.code && (
-              <div className="doc-code">
-                <pre>
-                  <code>{section.code}</code>
-                </pre>
-                <Copy text={section.code} />
-              </div>
+              <Code lang={section.lang}>{section.code}</Code>
             )}
 
             {section.entries && (

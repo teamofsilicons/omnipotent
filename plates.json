@@ -20,28 +20,27 @@
         444
       ]
     },
-    "diving-bell": {
-      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/T4-_d634_-_Fig._397_%E2%80%94_Cloche_de_Halley.png/1280px-T4-_d634_-_Fig._397_%E2%80%94_Cloche_de_Halley.png",
-      "title": "Fig. 397 — Cloche de Halley",
+    "sea-floor": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/80/T4-_d673_-_Fig._428_%E2%80%94_Constructions_sous-marines.png",
+      "title": "Fig. 428 — Constructions sous-marines",
       "date": "Louis Figuier, Les Merveilles de la Science, 1870",
       "holder": "Wikimedia Commons",
       "licence": "Public domain",
-      "source": "https://commons.wikimedia.org/wiki/File:T4-_d634_-_Fig._397_%E2%80%94_Cloche_de_Halley.png",
-      "aspect": 0.9,
-      "gravity": 0.08,
-      "cutoff": 0.4,
-      "contrast": 1.0,
-      "gamma": 1.05,
-      "spread": 1.2,
+      "source": "https://commons.wikimedia.org/wiki/File:T4-_d673_-_Fig._428_%E2%80%94_Constructions_sous-marines.png",
+      "aspect": 1.15,
+      "cutoff": 0.2,
+      "contrast": 0.95,
+      "gamma": 1.8,
+      "spread": 1.0,
       "crop": [
-        0.06,
-        0.15,
-        0.94,
+        0.02,
+        0.14,
+        0.99,
         1.0
       ],
       "size": [
         720,
-        800
+        626
       ]
     },
     "movable-type": {

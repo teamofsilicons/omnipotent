@@ -23,6 +23,8 @@ app/boundary.tsx           injected against held, at the turn seam
 app/grammars.tsx           three CLIs drawn at three rail gauges
 app/pipeline.tsx           commit to command line, in five stations
 app/chapter.tsx            a chapter, and a plate with its credit read from JSON
+app/code.tsx               a block that names its language and colours it
+app/logos.tsx              the three vendors' own marks, as drawn by their owners
 app/mark.tsx               four circles, overlapping. in ink, or overprinted
 app/dither.tsx             an 8x8 Bayer field, drawn once per page
 

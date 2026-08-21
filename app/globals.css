@@ -369,6 +369,8 @@ code {
    concentric with the four outside. */
 .strip { position: relative; display: flex; align-items: center; gap: 0; }
 
+/* Appears, then moves. Two transitions with different jobs: opacity runs on
+   the way in, transform and width run for the rest of its life. */
 .strip-pill {
   position: absolute;
   left: 0;
@@ -377,7 +379,13 @@ code {
   z-index: 0;
   background: var(--fill-3);
   border-radius: var(--r-in);
-  transition: transform var(--move), width var(--move);
+  opacity: 0;
+  transition: opacity 260ms var(--quint);
+}
+
+.strip-pill.shown {
+  opacity: 1;
+  transition: transform 260ms var(--quint), width 260ms var(--quint), opacity 260ms var(--quint);
 }
 
 .top .places a {
@@ -392,6 +400,7 @@ code {
 }
 
 .top .places a:hover { color: var(--ink); }
+.strip:hover a[data-here]:not(:hover) { color: var(--ink-48); }
 .top .places a[data-here] { color: var(--ink); }
 
 .strip-seam {
@@ -710,7 +719,7 @@ pre code { background: none; padding: 0; font-size: inherit; }
 .point .mark {
   fill: var(--raised);
   stroke: var(--tint);
-  stroke-width: 1.25;
+  stroke-width: 1;
   transition: r var(--snappy), fill var(--quick), opacity var(--quick);
 }
 /* On the dial: its level's colour inside, its vendor's colour round the rim.
@@ -849,9 +858,6 @@ pre code { background: none; padding: 0; font-size: inherit; }
 .doc-section + .doc-section { margin-top: 4.5rem; }
 .doc-blurb { color: var(--ink-62); max-width: 34rem; }
 
-.doc-code { position: relative; }
-.doc-code .copy { position: absolute; top: 1.5rem; right: 1rem; }
-
 .entries { margin: 1.8rem 0 0; }
 .entry { padding: 1.05rem 0; border-top: var(--hair) solid var(--line-1); }
 .entry:first-child { border-top: 0; padding-top: .4rem; }
@@ -975,30 +981,6 @@ pre code { background: none; padding: 0; font-size: inherit; }
 @media (max-width: 820px) {
   .split { grid-template-columns: minmax(0, 1fr); gap: 1.3rem; }
 }
-
-/* -------------------------------------------------------------- code slab */
-
-.slab {
-  position: relative;
-  margin-top: 2.6rem;
-  background: var(--raised);
-  border-radius: var(--r);
-  box-shadow: var(--ring);
-  overflow: hidden;
-}
-
-.slab pre {
-  margin: 0;
-  padding: 1.5rem 1.6rem;
-  overflow-x: auto;
-  font-family: var(--mono);
-  font-size: 13.5px;
-  line-height: 1.72;
-  color: var(--ink-90);
-  tab-size: 4;
-}
-
-.slab .copy { position: absolute; top: .8rem; right: .8rem; }
 
 /* The release this page is true for. Documentation that does not say which
    version it describes is documentation you have to guess at. */
@@ -1217,11 +1199,24 @@ html, body { overflow-x: clip; }
   align-items: start;
 }
 
+/* Justified, and on the last line too, so the two lines square off against
+   each other the way a set block of type does. */
 .hero h1 {
   font-size: clamp(2.4rem, 4.9vw, 4.1rem);
   line-height: .98;
   letter-spacing: -.042em;
-  text-wrap: balance;
+  /* Justified, like the prose. The last line of each sentence falls where it
+     falls — forcing it would spread two words across the whole measure, which
+     is a hole, not a margin. */
+  text-align: justify;
+  text-align-last: left;
+  -moz-text-align-last: left;
+  text-wrap: initial;
+  hyphens: none;
+}
+
+@media (max-width: 620px) {
+  .hero h1 { text-align: left; text-align-last: left; }
 }
 
 .hero-side { max-width: 34rem; }
@@ -1596,7 +1591,7 @@ html, body { overflow-x: clip; }
   margin: .75rem 0 .85rem;
   border-top: var(--hair) solid var(--line-3);
   border-bottom: var(--hair) solid var(--line-3);
-  background: repeating-linear-gradient(90deg, var(--tone) 0 2px, transparent 2px var(--gauge));
+  background: repeating-linear-gradient(90deg, var(--tone) 0 1px, transparent 1px var(--gauge));
 }
 
 .rail-holds {
@@ -1619,7 +1614,7 @@ html, body { overflow-x: clip; }
   max-width: 31rem;
   margin-bottom: .85rem;
   background:
-    repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 11px),
+    repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 11px),
     var(--ramp-x);
   border-top: 1px solid var(--ink);
   border-bottom: 1px solid var(--ink);
@@ -1827,7 +1822,10 @@ html, body { overflow-x: clip; }
   min-width: 0;
 }
 
-.step-who { width: 7px; height: 7px; border-radius: 50%; background: var(--tone); flex: none; }
+/* Whose command line holds this rung, in that company's own mark. A reader who
+   has used one of the three knows the glyph already; a coloured dot would have
+   spent that recognition on nothing. */
+.step-who { display: inline-flex; flex: none; color: var(--tone); }
 .step-model em { font-style: normal; color: var(--ink-34); }
 .step-price { font-size: 10.5px; color: var(--ink-48); }
 
@@ -2012,8 +2010,8 @@ html, body { overflow-x: clip; }
 .tally div {
   flex: 1 1 8.5rem;
   display: flex;
-  align-items: baseline;
-  gap: .55rem;
+  align-items: center;
+  gap: .6rem;
   padding: .95rem 1rem .95rem 0;
 }
 
@@ -2222,7 +2220,7 @@ html, body { overflow-x: clip; }
   letter-spacing: 0;
 }
 
-.rows td .step-who { display: inline-block; margin-right: .45rem; transform: translateY(-1px); }
+.rows td .step-who { margin-right: .45rem; vertical-align: -2px; }
 
 
 /* =================================================================== dialer
@@ -2287,12 +2285,17 @@ html, body { overflow-x: clip; }
 
 .dialer-ticks { display: grid; grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 2px; }
 
+/* The bar grows upward inside a slot of fixed height. It used to change the
+   row's height, which moved the eleven numbers underneath it every time the
+   dial was turned. */
 .dialer-tick {
   background: none;
   border: 0;
   padding: 0;
   cursor: pointer;
   display: grid;
+  grid-template-rows: 22px auto;
+  align-items: end;
   gap: .3rem;
   justify-items: stretch;
 }
@@ -2701,3 +2704,87 @@ html, body { overflow-x: clip; }
 .leg-head .logo { color: var(--tint); transform: translateY(2px); }
 .toggle .logo { color: var(--line-3); transition: color var(--quick); }
 .toggle.on .logo { color: var(--tint); }
+
+
+/* A model inside the edge is drawn as the mark of the company that serves it.
+   Filled, no stroke — a 14px logo with a hairline round it turns to mud. */
+.point .logo-mark { fill: var(--tint); stroke: none; }
+.point.on .logo-mark { fill: var(--tint); }
+.point.dim .logo-mark { fill: var(--line-3); }
+.point:hover .logo-mark { fill: var(--ink); }
+
+
+/* ==================================================================== code
+
+   A block that names its language and colours accordingly. The four token
+   colours are the ramp's own stops, each dragged toward the ink until it
+   clears 4.5:1 on this ground. Blue is absent on purpose: on this site blue
+   means a thing you can click.                                             */
+
+/* On its own it wants air above; as a column of a spread it must start level
+   with the plate beside it. */
+.spread > .code, .split > .code { margin-top: 0; }
+
+.code {
+  margin: 2.2rem 0 0;
+  border: var(--hair) solid var(--line-2);
+  border-radius: var(--r);
+  background: var(--raised);
+  overflow: hidden;
+}
+
+.code-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .45rem .5rem .45rem .85rem;
+  border-bottom: var(--hair) solid var(--line-1);
+}
+
+.code-lang { font-size: 10px; color: var(--ink-48); letter-spacing: .04em; }
+
+.code-take {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  font-family: var(--pixel);
+  font-size: 10px;
+  color: var(--ink-34);
+  background: var(--paper);
+  border: 0;
+  box-shadow: var(--ring);
+  border-radius: var(--r-2);
+  padding: .28rem .5rem;
+  cursor: pointer;
+  transition: color var(--quick), box-shadow var(--quick);
+}
+
+.code-take:hover { color: var(--ink); box-shadow: 0 0 0 var(--hair) var(--line-3); }
+.code-take.done { color: #0b7a5f; }
+
+.code pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: none;
+  padding: 1.1rem 1.15rem 1.2rem;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--ink);
+  tab-size: 4;
+}
+
+.t-comment   { color: var(--ink-34); font-style: italic; }
+.t-string    { color: #c6483e; }
+.t-number    { color: #8c6448; }
+.t-keyword   { color: #14245f; font-variation-settings: "wght" 600; }
+.t-decorator { color: #487785; }
+.t-call      { color: #487785; }
+
+/* Inside a 136px preview tile there is no room for chrome, so the tile borrows
+   the colours alone — and at 11px they are the only thing that says "code". */
+.mini-code .t-comment { font-style: normal; }

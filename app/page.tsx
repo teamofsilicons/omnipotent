@@ -3,13 +3,14 @@ import { ArrowRight, ChartScatter, Prohibit } from "@phosphor-icons/react/dist/s
 import { Boundary } from "./boundary"
 import { Chapter, Plate } from "./chapter"
 import { Contents } from "./contents"
+import { Code } from "./code"
 import { Command } from "./command"
-import { Copy } from "./copy"
 import { Dialer } from "./dialer"
 import { Dither } from "./dither"
 import { Field } from "./field"
 import { Grammars } from "./grammars"
 import { Mark } from "./mark"
+import { Logo, type Vendor } from "./logos"
 import { Pipeline } from "./pipeline"
 import { Relay } from "./relay"
 import { Tape } from "./tape"
@@ -19,7 +20,7 @@ import { dial as levelColour, on as inkOn } from "../lib/ramp"
 
 const QUICKSTART = `from omni import Inference, Event
 
-chat = Inference.load_or_create_session("nightly-triage")
+chat = Inference.load_or_create_session("triage")
 chat.intelligence(7)
 
 @chat.on_event
@@ -189,13 +190,12 @@ export default async function Landing() {
               that one accepts.
             </p>
             <Plate
-              name="diving-bell"
+              name="sea-floor"
               aside
-              alt="Engraving of Halley's diving bell, a man seated alone inside it on the sea floor"
+              alt="Engraving: masons laying a wall on the sea floor, air hoses running up through the waterline to a crew working in the open above"
               why={
                 <>
-                  One man, one hose, and one surface he is permitted to reach. A single vendor feels
-                  like this from the inside.
+                  Every man down there breathes through his own line. The wall goes up all the same.
                 </>
               }
             />
@@ -223,10 +223,7 @@ export default async function Landing() {
           }
         >
           <div className="spread lean">
-            <div className="slab">
-              <pre>{QUICKSTART}</pre>
-              <Copy text={QUICKSTART} />
-            </div>
+            <Code>{QUICKSTART}</Code>
             <Plate
               name="movable-type"
               aside
@@ -406,7 +403,9 @@ export default async function Landing() {
                     style={{ width: `${Math.max(2.5, width * 100)}%`, ["--tone" as string]: colour }}
                   />
                   <span className="step-model">
-                    <i className="step-who" style={{ ["--tone" as string]: `var(--${rung.provider})` }} />
+                    <span className="step-who" style={{ ["--tone" as string]: `var(--${rung.provider}-ink)` }}>
+                      <Logo of={rung.provider as Vendor} size={11} />
+                    </span>
                     {rung.model}
                     {rung.effort ? <em> {rung.effort}</em> : null}
                   </span>
@@ -420,8 +419,8 @@ export default async function Landing() {
             <div>
               <p className="set">
                 Bars are cost, on a log scale. Colour is the level itself: one gradient sampled
-                eleven times, because the eleven are one object. The dot beside each model says
-                which vendor holds that rung today, and it moves.
+                eleven times, because the eleven are one object. The mark beside each model says
+                whose command line holds that rung today, and it moves.
               </p>
               <p className="set">
                 Today it moves like this:{" "}

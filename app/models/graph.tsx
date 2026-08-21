@@ -5,7 +5,7 @@ import { useMemo, useRef, useState } from "react"
 import { beatenBy, dial, edge, plottable, type Entry, type Rung } from "../../lib/dial"
 import { PROVIDERS } from "../../lib/providers"
 import { dial as levelColour, on as inkOn } from "../../lib/ramp"
-import { Logo, type Vendor } from "../logos"
+import { Logo, MARK, type Vendor } from "../logos"
 
 /**
  * The whole argument, drawn.
@@ -32,48 +32,39 @@ const TINT: Record<string, string> = {
 const key = (r: Rung) => `${r.provider}/${r.model}/${r.effort}`
 
 /**
- * A vendor is a shape as well as a colour.
+ * A vendor's own mark, as the mark.
  *
- * Eight of the eleven dial stops sit under 3:1 against this paper — yellow is
- * 1.09 — so a chart that leans on hue alone is a chart that stops working in
- * greyscale, on a photocopier, and for a reader with any of the three common
- * dichromacies. Giving each CLI its own silhouette costs one switch statement
- * and means the picture still reads with every colour set to the same ink.
+ * These were a circle, a square and a triangle — a shape channel that survives
+ * greyscale, which was the right instinct and the wrong glyph. Three logos the
+ * reader already recognises do the same work and need no legend to decode, and
+ * they are still three distinct silhouettes.
+ *
+ * The eleven rungs keep the level-coloured disc with its number in it, because
+ * there the subject is the dial and not the company. The vendor holding a rung
+ * is the ring around it.
  */
-const SHAPE: Record<string, "circle" | "square" | "triangle"> = {
-  google: "circle",
-  openai: "square",
-  claude: "triangle",
-}
-
+/** The vendor's glyph, centred on a point and scaled to a radius. */
 function Glyph({
-  shape,
+  of,
   cx,
   cy,
   r,
   className,
 }: {
-  shape: "circle" | "square" | "triangle"
+  of: string
   cx: number
   cy: number
   r: number
   className?: string
 }) {
-  if (shape === "square") {
-    const a = r * 0.9
-    return <rect x={cx - a} y={cy - a} width={a * 2} height={a * 2} rx={1} className={className} />
-  }
-  if (shape === "triangle") {
-    const a = r * 1.16
-    const pts = [0, 1, 2]
-      .map((i) => {
-        const t = -Math.PI / 2 + (i * 2 * Math.PI) / 3
-        return `${cx + a * Math.cos(t)},${cy + a * Math.sin(t) + a * 0.14}`
-      })
-      .join(" ")
-    return <polygon points={pts} className={className} />
-  }
-  return <circle cx={cx} cy={cy} r={r} className={className} />
+  const d = MARK[of as Vendor]
+  if (!d) return <circle cx={cx} cy={cy} r={r} className={className} />
+  const k = (r * 2) / 24
+  return (
+    <g transform={`translate(${cx - r} ${cy - r}) scale(${k})`} className={className}>
+      <path d={d} />
+    </g>
+  )
 }
 
 export function Graph({ models }: { models: Entry[] }) {
@@ -165,8 +156,7 @@ export function Graph({ models }: { models: Entry[] }) {
             }
             aria-pressed={on.includes(p.id)}
           >
-            <span className={`key key-${SHAPE[p.id] ?? "circle"}`} />
-            <Logo of={p.id as Vendor} size={13} />
+            <Logo of={p.id as Vendor} size={14} />
             {p.label}
           </button>
         ))}
@@ -316,16 +306,14 @@ export function Graph({ models }: { models: Entry[] }) {
               {(ox !== 0 || oy !== 0) && (
                 <line x1={x(p.price)} y1={y(p.score)} x2={cx} y2={cy} className="leader" />
               )}
-              {mine && (
-                <Glyph shape={SHAPE[p.provider] ?? "circle"} cx={cx} cy={cy} r={12.5} className="ring" />
+              {mine ? (
+                <>
+                  <circle cx={cx} cy={cy} r={12.5} className="ring" />
+                  <circle cx={cx} cy={cy} r={11} className="mark" />
+                </>
+              ) : (
+                <Glyph of={p.provider} cx={cx} cy={cy} r={7} className="mark logo-mark" />
               )}
-              <Glyph
-                shape={SHAPE[p.provider] ?? "circle"}
-                cx={cx}
-                cy={cy}
-                r={mine ? 11 : 4.5}
-                className="mark"
-              />
               {mine && top !== undefined && (
                 <text
                   x={cx}

@@ -27,6 +27,13 @@ const MARKS: Record<Vendor, { d: string; of: string }> = {
   },
 }
 
+/** Just the path data, for drawing a vendor's mark straight into a chart. */
+export const MARK: Record<Vendor, string> = {
+  claude: MARKS.claude.d,
+  openai: MARKS.openai.d,
+  google: MARKS.google.d,
+}
+
 export function Logo({ of, size = 14 }: { of: Vendor; size?: number }) {
   const mark = MARKS[of]
   if (!mark) return null

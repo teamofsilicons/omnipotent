@@ -21,6 +21,7 @@ export interface Section {
   title: string
   blurb: string
   code?: string
+  lang?: "python" | "bash" | "http"
   entries?: Entry[]
   note?: string
 }
@@ -33,6 +34,7 @@ export const SECTIONS: Section[] = [
     blurb:
       "One package, no dependencies. You bring the CLIs. omni offers the ones that are both installed and signed in, and never mentions the others.",
     code: `pip install silicon-omni`,
+    lang: "bash",
     entries: [
       {
         call: "claude",
@@ -367,6 +369,7 @@ chat.send("hello")        # -> TEXT  'echo: hello'`,
     blurb:
       "omni contains the name of no model. It asks this site for a finished map from level to model, then hands the two strings to a CLI and reads nothing else out of the answer.",
     code: `GET https://omni.teamofsilicons.com/intelligence.json?providers=claude+google`,
+    lang: "http",
     entries: [
       {
         call: "OMNI_REGISTRY",

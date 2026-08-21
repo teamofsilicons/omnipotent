@@ -7,6 +7,7 @@ import { Mark } from "../mark"
 import { beatenBy, dialFor, edge, plottable, unusable } from "../../lib/dial"
 import { EDIT, graph, VIEW } from "../../lib/graph"
 import { dial as levelColour, on as inkOn } from "../../lib/ramp"
+import { Logo, type Vendor } from "../logos"
 
 export const metadata = {
   title: "models — silicon omni",
@@ -97,7 +98,9 @@ export default async function Models() {
                     </span>
                   </td>
                   <td>
-                    <i className="step-who" style={{ ["--tone" as string]: `var(--${rung.provider})` }} />
+                    <span className="step-who" style={{ ["--tone" as string]: `var(--${rung.provider}-ink)` }}>
+                      <Logo of={rung.provider as Vendor} size={11} />
+                    </span>
                     {rung.model}
                   </td>
                   <td className="n">{rung.effort || "—"}</td>
