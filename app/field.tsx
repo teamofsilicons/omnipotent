@@ -163,7 +163,10 @@ export function Field({ points }: { points: Rung[] }) {
     return seen.flatMap((group) =>
       group.length === 1
         ? [{ ...group[0], dx: 0, dy: 0, shares: [] as number[] }]
-        : group.map((point, i) => {
+        /* Sorted by score before fanning, so the better model always ends up
+           the higher mark. Fanning in arrival order put 5 above 6, which is the
+           one thing this axis is for. */
+        : [...group].sort((a, b) => a.score - b.score).map((point, i) => {
             const step = (i - (group.length - 1) / 2) * r * 1.5
             return {
               ...point,

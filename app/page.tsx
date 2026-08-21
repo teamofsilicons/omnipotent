@@ -103,11 +103,7 @@ export default async function Landing() {
                 subscriptions you already have. Turn the dial from seven to four and the same chat
                 finishes on another company&apos;s model, knowing everything said before it.
               </p>
-              <p className="hero-own rise" style={{ ["--i" as string]: 2 }}>
-                We sign in as you, with the logins already on your machine. Consumer terms were
-                written for a person at a keyboard. Read yours.
-              </p>
-              <div className="row rise" style={{ ["--i" as string]: 3, marginTop: "1.4rem" }}>
+              <div className="row rise" style={{ ["--i" as string]: 2 }}>
                 <Command text="pip install silicon-omni" />
                 <a className="btn ghost" href="/docs">
                   documentation

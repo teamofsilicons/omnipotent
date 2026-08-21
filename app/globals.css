@@ -1195,39 +1195,36 @@ html, body { overflow-x: clip; }
 .hero-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr);
-  gap: clamp(1.5rem, 4vw, 4rem);
-  align-items: start;
+  /* Wide enough that the two halves read as two things, not one paragraph that
+     changed its mind about type size. */
+  gap: clamp(1.6rem, 6.4vw, 7rem);
+  align-items: stretch;
 }
 
-/* Justified, and on the last line too, so the two lines square off against
-   each other the way a set block of type does. */
 .hero h1 {
   font-size: clamp(2.4rem, 4.9vw, 4.1rem);
   line-height: .98;
   letter-spacing: -.042em;
-  /* Justified, like the prose. The last line of each sentence falls where it
-     falls — forcing it would spread two words across the whole measure, which
-     is a hole, not a margin. */
-  text-align: justify;
-  text-align-last: left;
-  -moz-text-align-last: left;
+  text-align: left;
   text-wrap: initial;
   hyphens: none;
 }
 
-@media (max-width: 620px) {
-  .hero h1 { text-align: left; text-align-last: left; }
+/* The sentence at the top and the two buttons at the bottom, with the slack
+   between them rather than under them — so the block ends where the headline
+   ends instead of trailing off halfway up. */
+.hero-side {
+  max-width: 34rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.4rem;
 }
 
-.hero-side { max-width: 34rem; }
-.hero-side .lede { margin-top: .35rem; }
-
-.hero-own {
-  margin: .95rem 0 0;
-  font-size: 13.5px;
-  line-height: 1.55;
-  color: var(--ink-48);
-  max-width: 30rem;
+.hero-side .lede {
+  margin-top: .35rem;
+  font-size: clamp(1rem, 1.35vw, 1.08rem);
+  line-height: 1.58;
 }
 
 /* The chart, given the room it was always asking for — and sized so that its

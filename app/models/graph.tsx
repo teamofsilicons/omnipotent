@@ -275,6 +275,9 @@ export function Graph({ models }: { models: Entry[] }) {
           nudge.current = new Map()
           for (const g of groups) {
             if (g.length < 2) continue
+            // by score, so the better model is the higher mark — fanning in
+            // arrival order put 5 above 6
+            g.sort((a, b) => a.score - b.score)
             g.forEach((q, i) => {
               const step = (i - (g.length - 1) / 2) * 17
               nudge.current.set(key(q), [step * 0.72, -step * 0.72])
