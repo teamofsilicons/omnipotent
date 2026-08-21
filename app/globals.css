@@ -2692,3 +2692,12 @@ html, body { overflow-x: clip; }
   color: var(--ink-62);
   max-width: 30rem;
 }
+
+/* Each vendor's own mark, in that vendor's own colour. */
+.logo { display: block; flex: none; }
+
+/* The rail's mark takes the vendor's colour; the label stays ink. */
+.rail-name .logo { color: var(--tone); transform: translateY(1px); }
+.leg-head .logo { color: var(--tint); transform: translateY(2px); }
+.toggle .logo { color: var(--line-3); transition: color var(--quick); }
+.toggle.on .logo { color: var(--tint); }

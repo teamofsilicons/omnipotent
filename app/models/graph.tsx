@@ -5,6 +5,7 @@ import { useMemo, useRef, useState } from "react"
 import { beatenBy, dial, edge, plottable, type Entry, type Rung } from "../../lib/dial"
 import { PROVIDERS } from "../../lib/providers"
 import { dial as levelColour, on as inkOn } from "../../lib/ramp"
+import { Logo, type Vendor } from "../logos"
 
 /**
  * The whole argument, drawn.
@@ -165,6 +166,7 @@ export function Graph({ models }: { models: Entry[] }) {
             aria-pressed={on.includes(p.id)}
           >
             <span className={`key key-${SHAPE[p.id] ?? "circle"}`} />
+            <Logo of={p.id as Vendor} size={13} />
             {p.label}
           </button>
         ))}

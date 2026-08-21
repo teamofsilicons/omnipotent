@@ -1,3 +1,5 @@
+import { Logo, type Vendor } from "./logos"
+
 /**
  * Three grammars, one gauge.
  *
@@ -44,7 +46,7 @@ export function Grammars() {
       {RAILS.map((rail) => (
         <div key={rail.id} className="rail" style={{ ["--tone" as string]: `var(--${rail.id})`, ["--gauge" as string]: `${rail.gauge}px` }}>
           <div className="rail-name">
-            <i />
+            <Logo of={rail.id as Vendor} size={15} />
             <b>{rail.label}</b>
             <span className="num">{rail.grammar}</span>
           </div>

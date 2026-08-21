@@ -1,3 +1,5 @@
+import { Logo, type Vendor } from "./logos"
+
 /**
  * One thread, three vendors, and an answer that shows its sources.
  *
@@ -52,6 +54,7 @@ export function Relay() {
           }}
         >
           <div className="leg-head">
+            <Logo of={leg.who as Vendor} size={14} />
             <b>{leg.who}</b>
             <span className="leg-model num">{leg.model}</span>
             {i > 0 && <span className="leg-move num">switched</span>}
@@ -69,6 +72,7 @@ export function Relay() {
         }}
       >
         <div className="leg-head">
+          <Logo of="claude" size={14} />
           <b>claude</b>
           <span className="leg-model num">claude-sonnet-5</span>
           <span className="leg-move num">switched back</span>
