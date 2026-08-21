@@ -3,6 +3,7 @@ import { ArrowRight, ChartScatter, Prohibit } from "@phosphor-icons/react/dist/s
 import { Boundary } from "./boundary"
 import { Chapter, Plate } from "./chapter"
 import { Contents } from "./contents"
+import { Command } from "./command"
 import { Copy } from "./copy"
 import { Dialer } from "./dialer"
 import { Dither } from "./dither"
@@ -10,6 +11,7 @@ import { Field } from "./field"
 import { Grammars } from "./grammars"
 import { Mark } from "./mark"
 import { Pipeline } from "./pipeline"
+import { Relay } from "./relay"
 import { Tape } from "./tape"
 import { dialFor, edge, plottable } from "../lib/dial"
 import { graph } from "../lib/graph"
@@ -106,8 +108,7 @@ export default async function Landing() {
                 not written with a Python library in mind.
               </p>
               <div className="row rise" style={{ ["--i" as string]: 3, marginTop: "1.4rem" }}>
-                <code className="install">pip install silicon-omni</code>
-                <Copy text="pip install silicon-omni" />
+                <Command text="pip install silicon-omni" />
                 <a className="btn ghost" href="/docs">
                   documentation
                   <ArrowRight size={14} weight="bold" />
@@ -323,34 +324,7 @@ export default async function Landing() {
             </p>
           }
         >
-          <div className="relay">
-            {[
-              { who: "claude", model: "claude-sonnet-5", said: "Remember: fact one is RUBY-1.", back: "OK" },
-              { who: "openai", model: "gpt-5.4-mini", said: "Remember: fact two is JADE-2.", back: "OK" },
-              { who: "google", model: "gemini-3.5-flash-low", said: "Remember: fact three is ONYX-3.", back: "OK" },
-            ].map((step, i) => (
-              <div key={step.who} className="leg" style={{ ["--tint" as string]: `var(--${step.who})`, ["--tint-ink" as string]: `var(--${step.who}-ink)` }}>
-                <div className="leg-head">
-                  <span className="dot" />
-                  <span className="leg-who">{step.who}</span>
-                  <span className="leg-model num">{step.model}</span>
-                  {i > 0 && <span className="leg-move num">switched</span>}
-                </div>
-                <p className="leg-said">{step.said}</p>
-                <p className="leg-back">{step.back}</p>
-              </div>
-            ))}
-            <div className="leg final" style={{ ["--tint" as string]: "var(--claude)", ["--tint-ink" as string]: "var(--claude-ink)" }}>
-              <div className="leg-head">
-                <span className="dot" />
-                <span className="leg-who">claude</span>
-                <span className="leg-model num">claude-sonnet-5</span>
-                <span className="leg-move num">switched back</span>
-              </div>
-              <p className="leg-said">List all three facts.</p>
-              <p className="leg-back big">RUBY-1, JADE-2, ONYX-3</p>
-            </div>
-          </div>
+          <Relay />
 
           <Plate
             name="switchboard"
@@ -607,6 +581,19 @@ export default async function Landing() {
           id="database"
           name="the database"
           title="Publishing is a commit."
+          aside={
+            <p className="ch-aside set">
+            It matters whose file it is. The shipowners kept one register of ships and the
+            underwriters kept another: the Red Book and the Green Book, 1800 to 1833, grading the
+            same hulls, each believed only by the party that had printed it. Both came to the verge
+            of bankruptcy. Merged 1834, into{" "}
+            <a className="link" href="https://www.lr.org/en/who-we-are/brief-history/">
+              one body neither of them owned
+            </a>
+            . That is the arrangement that survived. A routing table maintained by any one of these
+            three vendors would be the Red Book.
+            </p>
+          }
           argue={
             <>
               <p>
@@ -627,17 +614,6 @@ export default async function Landing() {
             </>
           }
         >
-          <p className="set" style={{ maxWidth: "38rem", marginBottom: "0" }}>
-            It matters whose file it is. The shipowners kept one register of ships and the
-            underwriters kept another: the Red Book and the Green Book, 1800 to 1833, grading the
-            same hulls, each believed only by the party that had printed it. Both came to the verge
-            of bankruptcy. Merged 1834, into{" "}
-            <a className="link" href="https://www.lr.org/en/who-we-are/brief-history/">
-              one body neither of them owned
-            </a>
-            . That is the arrangement that survived. A routing table maintained by any one of these
-            three vendors would be the Red Book.
-          </p>
           <div className="spread lean">
             <Pipeline />
             <Plate
@@ -654,7 +630,29 @@ export default async function Landing() {
           </div>
         </Chapter>
 
-        <div className="breath"><Mark h={16} /></div>
+        {/* A rest, rather than a gap. The mark alone on an empty band was a
+            held breath with nothing in it; a flock is the same argument the
+            whole page has been making, and it is nobody's design. */}
+        <figure className="rest">
+          <div className="rest-plate">
+            <img
+              src="/plates/murmuration.png"
+              srcSet="/plates/murmuration.png 1x, /plates/murmuration@2x.png 2x"
+              alt="A dense band of red-winged blackbirds along the horizon, its upper edge rolling"
+              width={720}
+              height={240}
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <figcaption>
+            <Mark h={13} />
+            <span>
+              Nobody drew the top edge of that flock, and it is the sharpest line in the photograph.
+              Every frontier on this site is made the same way.
+            </span>
+          </figcaption>
+        </figure>
 
         <section className="close enter">
           <h2 className="column">

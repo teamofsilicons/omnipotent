@@ -1,20 +1,38 @@
 "use client"
 
+import { List, X } from "@phosphor-icons/react/dist/ssr"
 import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import { Mark } from "./mark"
 
-const PLACES = [
+/** Pages of this site. */
+const HERE = [
   { href: "/docs", label: "documentation" },
   { href: "/models", label: "models" },
   { href: "/inspirations", label: "inspirations" },
-  { href: "https://github.com/teamofsilicons/silicon-omni", label: "github" },
 ]
 
+/** Places that are not this site, marked as such. */
+const AWAY = [
+  { href: "https://github.com/teamofsilicons/silicon-omni", label: "github" },
+  { href: "https://pypi.org/project/silicon-omni/", label: "pypi" },
+]
+
+/**
+ * Two islands, and an indicator that slides.
+ *
+ * The active page used to be marked by making its label bolder, which reflows
+ * the row every time the pointer crosses it — the whole strip twitches. So the
+ * state is a background that slides underneath instead: nothing about the type
+ * changes except its colour, and colour costs no width.
+ */
 export function Chrome({ children }: { children: React.ReactNode }) {
   const here = usePathname()
   const [stuck, setStuck] = useState(false)
+  const [open, setOpen] = useState(false)
+  const strip = useRef<HTMLDivElement>(null)
+  const [pill, setPill] = useState<{ x: number; w: number } | null>(null)
 
   useEffect(() => {
     const watch = () => setStuck(window.scrollY > 8)
@@ -22,6 +40,27 @@ export function Chrome({ children }: { children: React.ReactNode }) {
     window.addEventListener("scroll", watch, { passive: true })
     return () => window.removeEventListener("scroll", watch)
   }, [])
+
+  /* Measure the active link and park the indicator on it. Re-measured on
+     resize, because the labels are words and words rewrap. */
+  const place = useCallback(() => {
+    const box = strip.current
+    if (!box) return
+    const on = box.querySelector<HTMLElement>("a[data-here]")
+    if (!on) return setPill(null)
+    setPill({ x: on.offsetLeft, w: on.offsetWidth })
+  }, [])
+
+  useEffect(() => {
+    place()
+    const again = () => place()
+    window.addEventListener("resize", again)
+    const fonts = (document as Document & { fonts?: FontFaceSet }).fonts
+    fonts?.ready.then(again)
+    return () => window.removeEventListener("resize", again)
+  }, [place, here])
+
+  useEffect(() => setOpen(false), [here])
 
   // Anything marked .enter is released as it arrives, once.
   useEffect(() => {
@@ -42,39 +81,85 @@ export function Chrome({ children }: { children: React.ReactNode }) {
     return () => eye.disconnect()
   }, [here])
 
+  const mark = (href: string) => (here === href || (href !== "/" && here.startsWith(href)) ? true : false)
+
   return (
     <>
       <a className="skip" href="#start">
         skip to the page
       </a>
-      <header className={`top${stuck ? " stuck" : ""}`}>
+
+      <header className={`top${stuck ? " stuck" : ""}${open ? " open" : ""}`}>
         <a href="/" className="wordmark" aria-label="silicon omni, home">
           <Mark h={14} />
           <span>silicon omni</span>
         </a>
-        <nav>
-          {PLACES.map((place) => (
-            <a
-              key={place.href}
-              href={place.href}
-              {...(here.startsWith(place.href) ? { "data-here": "", "aria-current": "page" as const } : {})}
-            >
+
+        <nav className="places" aria-label="pages">
+          <div className="strip" ref={strip}>
+            {pill && (
+              <span className="strip-pill" style={{ transform: `translateX(${pill.x}px)`, width: pill.w }} aria-hidden />
+            )}
+            {HERE.map((place) => (
+              <a
+                key={place.href}
+                href={place.href}
+                {...(mark(place.href) ? { "data-here": "", "aria-current": "page" as const } : {})}
+              >
+                {place.label}
+              </a>
+            ))}
+          </div>
+          <span className="strip-seam" aria-hidden />
+          {AWAY.map((place) => (
+            <a key={place.href} className="away" href={place.href} rel="noreferrer">
               {place.label}
             </a>
           ))}
         </nav>
+
+        <button
+          className="burger"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          aria-controls="pocket"
+          aria-label={open ? "close the menu" : "open the menu"}
+        >
+          {open ? <X size={16} weight="bold" /> : <List size={16} weight="bold" />}
+        </button>
       </header>
+
+      {/* The same list, vertically, for a screen too narrow to line it up. */}
+      <div id="pocket" className={`pocket${open ? " open" : ""}`} hidden={!open}>
+        {HERE.map((place) => (
+          <a
+            key={place.href}
+            href={place.href}
+            {...(mark(place.href) ? { "data-here": "", "aria-current": "page" as const } : {})}
+          >
+            {place.label}
+          </a>
+        ))}
+        <span className="pocket-seam" aria-hidden />
+        {AWAY.map((place) => (
+          <a key={place.href} className="away" href={place.href} rel="noreferrer">
+            {place.label}
+          </a>
+        ))}
+      </div>
+
       <main id="start">{children}</main>
+
       <footer className="end">
         <div className="row">
           <span>silicon omni</span>
           <a href="/docs">documentation</a>
           <a href="/models">models</a>
+          <a href="/inspirations">inspirations</a>
           <a href="/intelligence.json">the dial, as json</a>
           <a href="https://github.com/teamofsilicons/silicon-omni">library</a>
           <a href="https://pypi.org/project/silicon-omni/">pypi</a>
           <a href="https://github.com/teamofsilicons/silicon-omni/blob/main/CHANGELOG.md">changelog</a>
-          <a href="/inspirations">inspirations</a>
           <a href="https://github.com/teamofsilicons/omnipotent">this site</a>
           <a href="https://artificialanalysis.ai/evaluations/gdpval-aa">gdpval</a>
         </div>

@@ -139,7 +139,41 @@ export function Field({ points }: { points: Rung[] }) {
 
   const onEdge = useMemo(() => new Set(walk.map(key)), [walk])
   const inside = useMemo(() => placed.filter((p) => !onEdge.has(key(p))), [placed, onEdge])
-  const rim = useMemo(() => placed.filter((p) => onEdge.has(key(p))), [placed, onEdge])
+
+  /**
+   * The dial can put two rungs on one pixel.
+   *
+   * Levels 5 and 6 are currently a dollar and a third apart and one Elo apart —
+   * a real distinction on the board and an invisible one on a chart, because at
+   * this scale they land inside each other. So near-coincident rungs are fanned
+   * along the diagonal and each keeps a hairline back to where it actually is.
+   * The mark moves; the claim does not, because the leader shows the truth and
+   * the readout names the level it shares the spot with.
+   */
+  const rim = useMemo(() => {
+    const on = placed.filter((p) => onEdge.has(key(p)))
+    const r = wide ? 11 : 9
+    const near = r * 2.1
+    const seen: (typeof on)[] = []
+    for (const point of on) {
+      const cluster = seen.find((g) => Math.hypot(g[0].x - point.x, g[0].y - point.y) < near)
+      if (cluster) cluster.push(point)
+      else seen.push([point])
+    }
+    return seen.flatMap((group) =>
+      group.length === 1
+        ? [{ ...group[0], dx: 0, dy: 0, shares: [] as number[] }]
+        : group.map((point, i) => {
+            const step = (i - (group.length - 1) / 2) * r * 1.5
+            return {
+              ...point,
+              dx: step * 0.72,
+              dy: -step * 0.72,
+              shares: group.filter((o) => o !== point).map((o) => o.level ?? 0),
+            }
+          }),
+    )
+  }, [placed, onEdge, wide])
 
   /* Markowitz drew the attainable set as a filled region in 1952 and only then
      drew its boundary, which is the right way round: the frontier needs no
@@ -147,17 +181,25 @@ export function Field({ points }: { points: Rung[] }) {
      this cloud gets a flat tint, and the empty half above the staircase gets a
      sentence, because the region where nothing can exist is the half people
      remember. */
+  /* Edge to edge, both sides.
+     This used to close at the plot's right edge but at level 0's own x on the
+     left, so it read as a slab shoved to one side. The frontier is a ceiling:
+     everything under it is beaten and everything under its lowest rung is
+     beaten by that rung, so the region is the whole floor of the chart. */
   const dominated = useMemo(() => {
     if (walk.length < 2) return ""
     const bottom = box.h - pad.bottom
+    const left = pad.left - 14
     const right = box.w - pad.right
+    const floorLevel = walk[walk.length - 1]
     return (
       stairFrom(walk, atX, atY) +
-      ` L ${atX(walk[walk.length - 1].price)},${bottom}` +
+      ` L ${left},${atY(floorLevel.score)}` +
+      ` L ${left},${bottom}` +
       ` L ${right},${bottom}` +
       ` L ${right},${atY(walk[0].score)} Z`
     )
-  }, [walk, atX, atY, box.h, box.w, pad.bottom, pad.right])
+  }, [walk, atX, atY, box.h, box.w, pad.bottom, pad.right, pad.left])
 
   /* The staircase, as the dial actually descends: give up score at the same
      money, then give up money. A diagonal would imply a trade nobody is
@@ -376,25 +418,30 @@ export function Field({ points }: { points: Rung[] }) {
         {rim.map((p) => {
           const colour = levelColour(p.level ?? 0)
           const isLit = litKey === key(p)
+          const cx = p.x + p.dx
+          const cy = p.y + p.dy
           return (
             <g
               key={key(p)}
               className={`field-rung${isLit ? " lit" : ""}${lit && !isLit ? " hush" : ""}`}
             >
+              {(p.dx !== 0 || p.dy !== 0) && (
+                <line x1={p.x} y1={p.y} x2={cx} y2={cy} className="field-leader" />
+              )}
               <circle
                 ref={(node) => {
                   if (node) marks.current.set(key(p), node)
                   else marks.current.delete(key(p))
                 }}
-                cx={p.x}
-                cy={p.y}
+                cx={cx}
+                cy={cy}
                 r={wide ? 11 : 9}
                 className="field-mark"
                 style={{ ["--tone" as string]: colour }}
               />
               <text
-                x={p.x}
-                y={p.y}
+                x={cx}
+                y={cy}
                 className="field-level"
                 style={{ ["--tone" as string]: inkOn(colour) }}
               >
@@ -430,7 +477,15 @@ export function Field({ points }: { points: Rung[] }) {
                 {beater.effort ? ` ${beater.effort}` : ""} — better <em>and</em> cheaper
               </span>
             ) : (
-              <span className="field-verdict on">on the dial</span>
+              <span className="field-verdict on">
+                on the dial
+                {(() => {
+                  const me = rim.find((r) => key(r) === litKey)
+                  return me && me.shares.length
+                    ? ` · shares this spot with level ${me.shares.join(" and ")}`
+                    : ""
+                })()}
+              </span>
             )}
           </>
         ) : (

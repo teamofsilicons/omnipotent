@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 
 import { beatenBy, dial, edge, plottable, type Entry, type Rung } from "../../lib/dial"
 import { PROVIDERS } from "../../lib/providers"
@@ -80,6 +80,8 @@ export function Graph({ models }: { models: Entry[] }) {
   const [held, setHeld] = useState<Rung | null>(null)
   /** where the keyboard is, walking the edge best-first */
   const [cursor, setCursor] = useState(-1)
+  /** per-rung pixel offsets, for rungs that would otherwise coincide */
+  const nudge = useRef(new Map<string, [number, number]>())
 
   const everything = useMemo(() => plottable(models), [models])
   const points = useMemo(() => everything.filter((p) => on.includes(p.provider)), [everything, on])
@@ -127,11 +129,19 @@ export function Graph({ models }: { models: Entry[] }) {
      what the frontier excludes is what makes the frontier legible without a
      legend — and it turns "everything inside it is a model you would never
      rationally choose" from a sentence into a region. */
-  const beaten =
-    walk.length > 1
-      ? `${staircase} L ${x(walk[walk.length - 1].price)},${H - PAD.bottom}` +
-        ` L ${W - PAD.right},${H - PAD.bottom} L ${W - PAD.right},${y(walk[0].score)} Z`
-      : ""
+  /* Edge to edge. The frontier is a ceiling, so the region under it is the
+     whole floor of the chart — not a slab that stops at level 0 on one side and
+     runs to the frame on the other. */
+  const beaten = (() => {
+    if (walk.length < 2) return ""
+    const left = PAD.left
+    const right = W - PAD.right
+    const floorLevel = walk[walk.length - 1]
+    return (
+      `${staircase} L ${left},${y(floorLevel.score)} L ${left},${H - PAD.bottom}` +
+      ` L ${right},${H - PAD.bottom} L ${right},${y(walk[0].score)} Z`
+    )
+  })()
 
   const beater = held && !onEdge.has(key(held)) ? beatenBy(held, points) : null
 
@@ -258,12 +268,37 @@ export function Graph({ models }: { models: Entry[] }) {
           </g>
         )}
 
+        {(() => {
+          /* Two rungs can land on one pixel — 5 and 6 currently do. Fan the
+             cluster along the diagonal and give each a hairline home. */
+          const on = points.filter((q) => onEdge.has(key(q)))
+          const groups: Rung[][] = []
+          for (const q of on) {
+            const g = groups.find(
+              (h) => Math.hypot(x(h[0].price) - x(q.price), y(h[0].score) - y(q.score)) < 24,
+            )
+            if (g) g.push(q)
+            else groups.push([q])
+          }
+          nudge.current = new Map()
+          for (const g of groups) {
+            if (g.length < 2) continue
+            g.forEach((q, i) => {
+              const step = (i - (g.length - 1) / 2) * 17
+              nudge.current.set(key(q), [step * 0.72, -step * 0.72])
+            })
+          }
+          return null
+        })()}
         {points.map((p) => {
           const mine = onEdge.has(key(p))
           const level = levels.get(key(p))
           const top = level?.sort((a, b) => b - a)[0]
           const dim = held && !mine && key(held) !== key(p) && key(beater ?? held) !== key(p)
           const tone = mine && top !== undefined ? levelColour(top) : undefined
+          const [ox, oy] = nudge.current.get(key(p)) ?? [0, 0]
+          const cx = x(p.price) + ox
+          const cy = y(p.score) + oy
           return (
             <g
               key={key(p)}
@@ -276,33 +311,30 @@ export function Graph({ models }: { models: Entry[] }) {
               {/* The ink ring is outside the mark, its radius the mark's plus
                   the stroke, so the two curves stay concentric — and the pale
                   end of the ramp is visible at all. */}
+              {(ox !== 0 || oy !== 0) && (
+                <line x1={x(p.price)} y1={y(p.score)} x2={cx} y2={cy} className="leader" />
+              )}
               {mine && (
-                <Glyph
-                  shape={SHAPE[p.provider] ?? "circle"}
-                  cx={x(p.price)}
-                  cy={y(p.score)}
-                  r={12.5}
-                  className="ring"
-                />
+                <Glyph shape={SHAPE[p.provider] ?? "circle"} cx={cx} cy={cy} r={12.5} className="ring" />
               )}
               <Glyph
                 shape={SHAPE[p.provider] ?? "circle"}
-                cx={x(p.price)}
-                cy={y(p.score)}
+                cx={cx}
+                cy={cy}
                 r={mine ? 11 : 4.5}
                 className="mark"
               />
               {mine && top !== undefined && (
                 <text
-                  x={x(p.price)}
-                  y={y(p.score)}
+                  x={cx}
+                  y={cy}
                   className="level"
                   style={{ ["--on" as string]: inkOn(levelColour(top)) }}
                 >
                   {top}
                 </text>
               )}
-              <circle cx={x(p.price)} cy={y(p.score)} r={17} className="hit" />
+              <circle cx={cx} cy={cy} r={17} className="hit" />
             </g>
           )
         })}

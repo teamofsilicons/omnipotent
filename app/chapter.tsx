@@ -39,6 +39,7 @@ export function Chapter({
   id,
   title,
   argue,
+  aside,
   children,
 }: {
   n: number
@@ -47,6 +48,8 @@ export function Chapter({
   id?: string
   title: React.ReactNode
   argue: React.ReactNode
+  /** goes under the claim, in the left column, so the column is not a hole */
+  aside?: React.ReactNode
   children?: React.ReactNode
 }) {
   return (
@@ -59,7 +62,10 @@ export function Chapter({
       </div>
       <div className="ch-body">
         <div className="ch-lead">
-          <h2>{title}</h2>
+          <div className="ch-claim">
+            <h2>{title}</h2>
+            {aside}
+          </div>
           <div className="set">{argue}</div>
         </div>
         {children}

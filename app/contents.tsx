@@ -45,7 +45,7 @@ function MiniFrontier() {
         </linearGradient>
       </defs>
       {CLOUD.map(([x, y]) => (
-        <circle key={`${x}-${y}`} cx={x} cy={y} r={2.4} fill="var(--ink-18)" />
+        <circle key={`${x}-${y}`} cx={x} cy={y} r={2.4} fill="var(--dot)" />
       ))}
       <polyline
         points={STAIR.map(([x, y]) => `${x},${y}`).join(" ")}
