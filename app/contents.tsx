@@ -150,6 +150,7 @@ function MiniNots() {
       {[
         "Carry reasoning across a switch.",
         "Define tools.",
+        "Pretend Antigravity can be muzzled.",
         "Guess a benchmark number.",
         "Ship a model list.",
       ].map((n) => (

@@ -156,6 +156,12 @@ export default async function Landing() {
             </>
           }
         >
+          {/* Brunel really did promise the Bristol company that transshipment
+              would be trivial — the substance is well attested — but the exact
+              wording traces only to MacDermot's History of the GWR at second
+              hand, and archive.org and HathiTrust full-text are both closed to
+              us. So it is paraphrased. Do not put the quotation marks back
+              without reading vol. I pt. 1 p. 211 yourself. */}
           <Plate
             name="break-of-gauge"
             eager
@@ -165,8 +171,8 @@ export default async function Landing() {
                 Seven foot and a quarter inch on one side of the shed, four foot eight and a half on
                 the other, and a hundred men in between moving every crate across by hand. Brunel
                 had assured the Bristol company that shifting a whole load from one company&apos;s
-                waggon to the other&apos;s needed only <q>a very simple arrangement</q>; the
-                engraving is the arrangement.
+                waggon to the other&apos;s would need only a very simple arrangement. The engraving
+                is the arrangement.
               </>
             }
           />
@@ -640,7 +646,8 @@ export default async function Landing() {
 
         <section className="close enter">
           <h2 className="column">
-            One <code>pip install</code>. After that, one number.
+            One <code>pip install</code>. After that, the largest decision left is an integer
+            between 0 and 10.
           </h2>
           <div className="row" style={{ marginTop: "1.8rem" }}>
             <a className="btn solid" href="/docs">
