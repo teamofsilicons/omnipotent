@@ -1141,7 +1141,7 @@ html, body { overflow-x: clip; }
   align-items: baseline;
   gap: .35rem .95rem;
   min-height: 2.9rem;
-  padding: .85rem 0 0;
+  padding: .85rem clamp(1.1rem, 3.2vw, 2.6rem) 0;
   border-top: var(--hair) solid var(--line-1);
   font-size: 11.5px;
   color: var(--ink-48);
@@ -1230,18 +1230,22 @@ html, body { overflow-x: clip; }
 /* The chart, given the room it was always asking for — and sized so that its
    readout is above the fold on a laptop. The readout is the whole reward for
    touching a dot; a chart whose answer is off-screen is a chart nobody asks. */
+/* Edge to edge. A log axis wants every pixel of width it can get — four decades
+   of cost squeezed into a measure is four decades nobody can read — so the
+   chart takes the whole screen and only the readout under it keeps the page's
+   inset. */
 .plot {
-  height: min(48vh, 440px);
-  min-height: 330px;
+  height: min(64vh, 620px);
+  min-height: 400px;
   margin-top: 0;
-  padding: 1.1rem clamp(1.1rem, 3.2vw, 2.6rem) 0;
+  padding: 1.1rem 0 0;
   border-top: var(--hair) solid var(--line-1);
 }
 
 @media (max-width: 900px) {
   .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 1.3rem; }
   .hero h1 { font-size: clamp(2.2rem, 8.5vw, 2.9rem); }
-  .plot { height: 60vh; min-height: 340px; }
+  .plot { height: 62vh; min-height: 360px; }
 }
 
 /* ================================================================= chapters
