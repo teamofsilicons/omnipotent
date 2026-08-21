@@ -92,13 +92,13 @@ export function Dialer({ rungs }: { rungs: Record<string, Rung> }) {
           <>
             one step down · &minus;{money(saving)} a task · &minus;{Math.round(cost)} elo
             {cost < RESOLVABLE && (
-              <b> · a gap this benchmark cannot resolve — that step is free</b>
+              <b> · inside the benchmark&apos;s own error bars. take it</b>
             )}
           </>
         ) : level === 0 ? (
-          <>bottom of the edge · nothing cheaper is worth running</>
+          <>the bottom of the edge</>
         ) : (
-          <>level {level - 1} is this same rung · nothing in between worth picking</>
+          <>level {level - 1} is this same rung</>
         )}
       </p>
     </div>

@@ -169,7 +169,7 @@ export function Tape({ high, low }: { high: Held; low: Held }) {
             <span key={w.id} className="tape-key num" style={{ ["--tone" as string]: `var(--${w.tint})` }}>
               <i />
               {w.label}
-              <u>{read[w.id] < 0 ? "nothing yet" : `read to ${read[w.id]}`}</u>
+              <u>{read[w.id] < 0 ? "waiting" : `read to ${read[w.id]}`}</u>
             </span>
           ))}
         </div>
@@ -212,7 +212,7 @@ export function Tape({ high, low }: { high: Held; low: Held }) {
               <span className="tape-kind num">{row.kind}</span>
               <span className="tape-body">
                 {row.kind === "thinking" ? (
-                  <span className="tape-dim">the model is reasoning. never what about.</span>
+                  <span className="tape-dim">the model is reasoning. we record that it did.</span>
                 ) : row.code ? (
                   <code>{row.body}</code>
                 ) : row.kind === "end" || row.kind === "config" ? (
@@ -224,7 +224,7 @@ export function Tape({ high, low }: { high: Held; low: Held }) {
                   <em className="tape-hand num">
                     {row.hands.keeps !== undefined
                       ? `handed ${row.hands.from}–${row.seq - 1} · resumes its own session, already holds 0–${row.hands.keeps}`
-                      : `handed ${row.hands.from}–${row.seq - 1} · ${row.seq - row.hands.from} events, none of them twice`}
+                      : `handed ${row.hands.from}–${row.seq - 1} · ${row.seq - row.hands.from} events, each one once`}
                   </em>
                 )}
               </span>
@@ -240,7 +240,7 @@ export function Tape({ high, low }: { high: Held; low: Held }) {
         <button className="tape-btn num" onClick={() => step(-1)} aria-label="previous line">←</button>
         <button className="tape-btn num" onClick={() => step(1)} aria-label="next line">→</button>
         <span className="tape-note num">
-          {at >= 0 ? `seq ${at} of ${log.length - 1}` : "one file, both providers"}
+          {at >= 0 ? `seq ${at} of ${log.length - 1}` : "one file, both of them"}
         </span>
       </div>
     </div>

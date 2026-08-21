@@ -8,11 +8,11 @@
  */
 
 const STOPS = [
-  { at: "models-gdpval.json", what: "one file in a public repo. edit it, commit it. that is the publish" },
-  { at: "raw.githubusercontent", what: "read at request time. held for one minute" },
-  { at: "/intelligence.json", what: "every combination of providers, answered in one response" },
-  { at: "~/.omni/cache", what: "kept an hour, then re-fetched. a stale dial still runs offline" },
-  { at: "claude -p --model … --effort max", what: "two strings, handed over untouched" },
+  { at: "models-gdpval.json", what: "one file in a public repo. edit it, commit it" },
+  { at: "raw.githubusercontent", what: "read at request time, held for a minute" },
+  { at: "/intelligence.json", what: "every set of providers, answered at once" },
+  { at: "~/.omni/cache", what: "kept an hour. a stale dial still runs offline" },
+  { at: "claude -p --model … --effort max", what: "two strings, handed over as they are" },
 ]
 
 export function Pipeline() {
