@@ -4,6 +4,7 @@ import { useMemo, useState } from "react"
 
 import { beatenBy, dial, edge, plottable, type Entry, type Rung } from "../../lib/dial"
 import { PROVIDERS } from "../../lib/providers"
+import { dial as levelColour, on as inkOn } from "../../lib/ramp"
 
 /**
  * The whole argument, drawn.
@@ -29,9 +30,56 @@ const TINT: Record<string, string> = {
 
 const key = (r: Rung) => `${r.provider}/${r.model}/${r.effort}`
 
+/**
+ * A vendor is a shape as well as a colour.
+ *
+ * Eight of the eleven dial stops sit under 3:1 against this paper — yellow is
+ * 1.09 — so a chart that leans on hue alone is a chart that stops working in
+ * greyscale, on a photocopier, and for a reader with any of the three common
+ * dichromacies. Giving each CLI its own silhouette costs one switch statement
+ * and means the picture still reads with every colour set to the same ink.
+ */
+const SHAPE: Record<string, "circle" | "square" | "triangle"> = {
+  google: "circle",
+  openai: "square",
+  claude: "triangle",
+}
+
+function Glyph({
+  shape,
+  cx,
+  cy,
+  r,
+  className,
+}: {
+  shape: "circle" | "square" | "triangle"
+  cx: number
+  cy: number
+  r: number
+  className?: string
+}) {
+  if (shape === "square") {
+    const a = r * 0.9
+    return <rect x={cx - a} y={cy - a} width={a * 2} height={a * 2} rx={1} className={className} />
+  }
+  if (shape === "triangle") {
+    const a = r * 1.16
+    const pts = [0, 1, 2]
+      .map((i) => {
+        const t = -Math.PI / 2 + (i * 2 * Math.PI) / 3
+        return `${cx + a * Math.cos(t)},${cy + a * Math.sin(t) + a * 0.14}`
+      })
+      .join(" ")
+    return <polygon points={pts} className={className} />
+  }
+  return <circle cx={cx} cy={cy} r={r} className={className} />
+}
+
 export function Graph({ models }: { models: Entry[] }) {
   const [on, setOn] = useState<string[]>(PROVIDERS.map((p) => p.id))
   const [held, setHeld] = useState<Rung | null>(null)
+  /** where the keyboard is, walking the edge best-first */
+  const [cursor, setCursor] = useState(-1)
 
   const everything = useMemo(() => plottable(models), [models])
   const points = useMemo(() => everything.filter((p) => on.includes(p.provider)), [everything, on])
@@ -71,9 +119,19 @@ export function Graph({ models }: { models: Entry[] }) {
     .map((p, i) =>
       i === 0
         ? `M ${x(p.price)},${y(p.score)}`
-        : `L ${x(p.price)},${y(walk[i - 1].score)} L ${x(p.price)},${y(p.score)}`,
+        : `L ${x(walk[i - 1].price)},${y(p.score)} L ${x(p.price)},${y(p.score)}`,
     )
     .join(" ")
+
+  /* Markowitz shaded the attainable set before he drew its boundary. Shading
+     what the frontier excludes is what makes the frontier legible without a
+     legend — and it turns "everything inside it is a model you would never
+     rationally choose" from a sentence into a region. */
+  const beaten =
+    walk.length > 1
+      ? `${staircase} L ${x(walk[walk.length - 1].price)},${H - PAD.bottom}` +
+        ` L ${W - PAD.right},${H - PAD.bottom} L ${W - PAD.right},${y(walk[0].score)} Z`
+      : ""
 
   const beater = held && !onEdge.has(key(held)) ? beatenBy(held, points) : null
 
@@ -96,7 +154,7 @@ export function Graph({ models }: { models: Entry[] }) {
             }
             aria-pressed={on.includes(p.id)}
           >
-            <span className="dot" />
+            <span className={`key key-${SHAPE[p.id] ?? "circle"}`} />
             {p.label}
           </button>
         ))}
@@ -108,9 +166,34 @@ export function Graph({ models }: { models: Entry[] }) {
       <svg
         viewBox={`0 0 ${W} ${H}`}
         className="graph-svg"
-        role="img"
-        aria-label="Every model plotted by cost against score, with the dial along the upper-left edge"
+        tabIndex={0}
+        role="group"
+        aria-label={`${points.length} models plotted by cost against score. ${walk.length} are on the dial. Use the arrow keys to walk it.`}
+        onKeyDown={(e) => {
+          const by =
+            e.key === "ArrowRight" || e.key === "ArrowUp" ? -1
+            : e.key === "ArrowLeft" || e.key === "ArrowDown" ? 1
+            : 0
+          if (!by) {
+            if (e.key === "Escape") { setCursor(-1); setHeld(null) }
+            return
+          }
+          e.preventDefault()
+          const next = Math.max(0, Math.min(walk.length - 1, (cursor < 0 ? 0 : cursor) + by))
+          setCursor(next)
+          setHeld(walk[next] ?? null)
+        }}
+        onBlur={() => { setCursor(-1); setHeld(null) }}
       >
+        <defs>
+          <linearGradient id="graph-ramp" x1="0" y1="1" x2="0.35" y2="0">
+            <stop offset="0%" stopColor="#76d4f0" />
+            <stop offset="20%" stopColor="#f9f987" />
+            <stop offset="60%" stopColor="#fead75" />
+            <stop offset="80%" stopColor="#f15347" />
+            <stop offset="100%" stopColor="#14245f" />
+          </linearGradient>
+        </defs>
         {ticks.map((t) => (
           <g key={t}>
             <line x1={x(t)} x2={x(t)} y1={PAD.top} y2={H - PAD.bottom} className="grid" />
@@ -147,7 +230,27 @@ export function Graph({ models }: { models: Entry[] }) {
           </g>
         )}
 
+        {beaten && <path d={beaten} className="beaten-region" />}
         <path d={staircase} className="edge-path" />
+
+        {/* The two things a frontier asserts, written on the two regions it
+            makes. Confidence intervals on this benchmark run about ±15 to ±27
+            Elo, so the band is drawn pecked: inside it, two models are a tie
+            and the cheaper one wins. */}
+        {walk.length > 1 && (
+          <>
+            <text x={x(walk[walk.length - 1].price) + 16} y={y(walk[0].score) + 24} className="void-note">
+              nothing is both better and cheaper
+            </text>
+            <text
+              x={x(walk[Math.floor(walk.length / 2)].price) + 24}
+              y={H - PAD.bottom - 22}
+              className="void-note beaten"
+            >
+              {points.length - walk.length} models, each beaten on both counts at once
+            </text>
+          </>
+        )}
 
         {beater && held && (
           <g className="beat">
@@ -158,19 +261,45 @@ export function Graph({ models }: { models: Entry[] }) {
         {points.map((p) => {
           const mine = onEdge.has(key(p))
           const level = levels.get(key(p))
+          const top = level?.sort((a, b) => b - a)[0]
           const dim = held && !mine && key(held) !== key(p) && key(beater ?? held) !== key(p)
+          const tone = mine && top !== undefined ? levelColour(top) : undefined
           return (
             <g
               key={key(p)}
               className={`point${mine ? " on" : ""}${dim ? " dim" : ""}`}
-              style={{ ["--tint" as string]: TINT[p.provider] }}
+              style={{ ["--tint" as string]: TINT[p.provider], ...(tone ? { ["--tone" as string]: tone } : {}) }}
               onMouseEnter={() => setHeld(p)}
               onMouseLeave={() => setHeld(null)}
+              onClick={() => setHeld((was) => (was && key(was) === key(p) ? null : p))}
             >
-              <circle cx={x(p.price)} cy={y(p.score)} r={mine ? 11 : 4.5} className="mark" />
-              {mine && level && (
-                <text x={x(p.price)} y={y(p.score)} className="level">
-                  {level.sort((a, b) => b - a)[0]}
+              {/* The ink ring is outside the mark, its radius the mark's plus
+                  the stroke, so the two curves stay concentric — and the pale
+                  end of the ramp is visible at all. */}
+              {mine && (
+                <Glyph
+                  shape={SHAPE[p.provider] ?? "circle"}
+                  cx={x(p.price)}
+                  cy={y(p.score)}
+                  r={12.5}
+                  className="ring"
+                />
+              )}
+              <Glyph
+                shape={SHAPE[p.provider] ?? "circle"}
+                cx={x(p.price)}
+                cy={y(p.score)}
+                r={mine ? 11 : 4.5}
+                className="mark"
+              />
+              {mine && top !== undefined && (
+                <text
+                  x={x(p.price)}
+                  y={y(p.score)}
+                  className="level"
+                  style={{ ["--on" as string]: inkOn(levelColour(top)) }}
+                >
+                  {top}
                 </text>
               )}
               <circle cx={x(p.price)} cy={y(p.score)} r={17} className="hit" />
@@ -179,7 +308,7 @@ export function Graph({ models }: { models: Entry[] }) {
         })}
       </svg>
 
-      <div className={`graph-read${held ? " showing" : ""}`}>
+      <div className={`graph-read${held ? " showing" : ""}`} aria-live="polite">
         {held ? (
           <>
             <span className="graph-model">
@@ -199,7 +328,8 @@ export function Graph({ models }: { models: Entry[] }) {
           </>
         ) : (
           <span className="graph-hint">
-            hover a model. turn a provider off and watch the edge move.
+            hover or tap a model, or walk the dial with the arrow keys. turn a provider off and
+            watch the edge move.
           </span>
         )}
       </div>

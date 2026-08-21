@@ -28,13 +28,30 @@ const BAYER = [
 
 type Shape = "radial" | "linear"
 
-export function Dither({ shape = "radial", cells = 190 }: { shape?: Shape; cells?: number }) {
+export function Dither({
+  shape = "radial",
+  cells = 190,
+  wash = true,
+  /** ceiling on the smooth field before it is quantised. Below 1 the pattern
+      can never reach solid, which is the difference between a texture and a
+      checkerboard. */
+  weight = 0.58,
+}: {
+  shape?: Shape
+  cells?: number
+  wash?: boolean
+  weight?: number
+}) {
   const holder = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const box = holder.current
     if (!box) return
     if (window.matchMedia("(max-width: 720px)").matches) return
+    // The docstring used to claim this and the code never checked it. It is a
+    // still texture, so reduced-motion is not strictly about motion here — but
+    // somebody who has asked for less has asked for less.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
 
     const canvas = document.createElement("canvas")
     const brush = canvas.getContext("2d", { willReadFrequently: false })
@@ -60,7 +77,7 @@ export function Dither({ shape = "radial", cells = 190 }: { shape?: Shape; cells
           } else {
             value = 1 - y / h
           }
-          value = Math.pow(Math.max(0, value), 1.9)
+          value = Math.pow(Math.max(0, value), 1.9) * weight
 
           // Bayer: compare against a threshold that varies per cell, so a
           // constant value becomes a regular pattern rather than a flat block
@@ -83,7 +100,7 @@ export function Dither({ shape = "radial", cells = 190 }: { shape?: Shape; cells
       watcher.disconnect()
       canvas.remove()
     }
-  }, [shape, cells])
+  }, [shape, cells, weight])
 
-  return <div className="dither" ref={holder} aria-hidden />
+  return <div className={`dither${wash ? " wash" : ""}`} ref={holder} aria-hidden />
 }

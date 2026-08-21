@@ -16,6 +16,9 @@ import {
 import { useEffect, useState } from "react"
 
 import { Copy } from "../copy"
+import { Dither } from "../dither"
+import { Mark } from "../mark"
+import { sample } from "../../lib/ramp"
 import { Ticks } from "../ticks"
 import { SECTIONS } from "./content"
 
@@ -60,10 +63,11 @@ export function Docs() {
 
   return (
     <div className="shell docs">
+      <Dither shape="linear" cells={200} />
       <aside className="toc">
         <ol>
           {SECTIONS.map((s) => (
-            <li key={s.id}>
+            <li key={s.id} style={{ ["--tone" as string]: sample(SECTIONS.indexOf(s) / (SECTIONS.length - 1)) }}>
               <a href={`#${s.id}`} className={here === s.id ? "here" : undefined}>
                 {(() => {
                   const Icon = ICONS[s.icon]
@@ -75,12 +79,22 @@ export function Docs() {
           ))}
         </ol>
         <div className="toc-switch">
-          <div className="switch" role="tablist">
-            <button className={inside ? undefined : "on"} onClick={() => setInside(false)} role="tab">
+          {/* Two buttons, not a tablist. The role promised arrow keys, aria-selected
+              and tabpanels, none of which were here. aria-pressed is the truth. */}
+          <div className="switch">
+            <button
+              className={inside ? undefined : "on"}
+              onClick={() => setInside(false)}
+              aria-pressed={!inside}
+            >
               <Eye size={13} weight="bold" />
               surface
             </button>
-            <button className={inside ? "on" : undefined} onClick={() => setInside(true)} role="tab">
+            <button
+              className={inside ? "on" : undefined}
+              onClick={() => setInside(true)}
+              aria-pressed={inside}
+            >
               <Wrench size={13} weight="bold" />
               internal
             </button>
@@ -109,14 +123,20 @@ export function Docs() {
           the JSON-RPC method or the file write it actually becomes.
         </p>
 
-        {SECTIONS.map((section) => (
-          <section key={section.id} id={section.id} className="doc-section enter">
+        {SECTIONS.map((section, i) => (
+          <section
+            key={section.id}
+            id={section.id}
+            className="doc-section enter"
+            style={{ ["--tone" as string]: sample(i / (SECTIONS.length - 1)) }}
+          >
             <div className="rule">
+              <i className="rule-swatch" />
               {(() => {
                 const Icon = ICONS[section.icon]
                 return Icon ? <Icon size={14} weight="bold" /> : null
               })()}
-              <span>{section.title.toLowerCase()}</span>
+              <h2 className="rule-title">{section.title.toLowerCase()}</h2>
             </div>
             <p className="doc-blurb"><Ticks>{section.blurb}</Ticks></p>
 
@@ -141,9 +161,12 @@ export function Docs() {
                     <dd>
                       <p><Ticks>{entry.does}</Ticks></p>
                       {entry.inside && (
-                        <p className={`inside${inside ? " open" : ""}`}>
-                          <Ticks>{entry.inside}</Ticks>
-                        </p>
+                        <details className="inside" open={inside}>
+                          <summary>underneath</summary>
+                          <p>
+                            <Ticks>{entry.inside}</Ticks>
+                          </p>
+                        </details>
                       )}
                     </dd>
                   </div>
@@ -160,9 +183,7 @@ export function Docs() {
         ))}
 
         <div className="breath">
-          <span />
-          <span />
-          <span />
+          <Mark h={16} />
         </div>
       </div>
     </div>

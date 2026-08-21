@@ -3,9 +3,12 @@
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 
+import { Mark } from "./mark"
+
 const PLACES = [
   { href: "/docs", label: "documentation" },
   { href: "/models", label: "models" },
+  { href: "/inspirations", label: "inspirations" },
   { href: "https://github.com/teamofsilicons/silicon-omni", label: "github" },
 ]
 
@@ -41,8 +44,12 @@ export function Chrome({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <a className="skip" href="#start">
+        skip to the page
+      </a>
       <header className={`top${stuck ? " stuck" : ""}`}>
         <a href="/" className="wordmark">
+          <Mark h={14} />
           silicon omni
         </a>
         <nav>
@@ -50,14 +57,14 @@ export function Chrome({ children }: { children: React.ReactNode }) {
             <a
               key={place.href}
               href={place.href}
-              {...(here.startsWith(place.href) ? { "data-here": "" } : {})}
+              {...(here.startsWith(place.href) ? { "data-here": "", "aria-current": "page" as const } : {})}
             >
               {place.label}
             </a>
           ))}
         </nav>
       </header>
-      <main>{children}</main>
+      <main id="start">{children}</main>
       <footer className="end">
         <div className="row">
           <span>silicon omni</span>
@@ -67,6 +74,7 @@ export function Chrome({ children }: { children: React.ReactNode }) {
           <a href="https://github.com/teamofsilicons/silicon-omni">library</a>
           <a href="https://pypi.org/project/silicon-omni/">pypi</a>
           <a href="https://github.com/teamofsilicons/silicon-omni/blob/main/CHANGELOG.md">changelog</a>
+          <a href="/inspirations">inspirations</a>
           <a href="https://github.com/teamofsilicons/omnipotent">this site</a>
           <a href="https://artificialanalysis.ai/evaluations/gdpval-aa">gdpval</a>
         </div>

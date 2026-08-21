@@ -4,8 +4,14 @@
  * Every model is a point on a graph: how good it is, and what it costs. Only
  * the left edge of that graph becomes a dial — a model earns a level if nothing
  * else is both better and cheaper. Level 10 is the top of the edge, and the
- * walk goes down and to the left, so a step down is always a real saving and
- * never a sideways move.
+ * walk goes down and to the left, so a step down is a real saving and never a
+ * sideways move.
+ *
+ * `beats` compares with no tolerance, and the benchmark it reads has confidence
+ * intervals of about 15 to 27 Elo — so two rungs can be separated by a gap this
+ * board cannot actually resolve. Today two of the ten steps are like that. The
+ * dial does not hide it: the site prints the Elo given up at every step and
+ * says which ones are inside the error bars.
  *
  * This is the only place the dial is worked out. The library does none of it:
  * it asks for a finished map and hands the strings to a CLI.

@@ -4,13 +4,13 @@ import { Chrome } from "./chrome"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "silicon omni — one interface for Claude Code, Codex and Antigravity",
+  title: "silicon omni — one Python object over Claude Code, Codex and Antigravity",
   description:
-    "A conversation that moves between vendors mid-flight and carries on where it left off. One Python object over three agentic CLIs, driven by the subscriptions you already pay for.",
+    "The conversation is yours and the vendor is a setting. One Python object drives three agentic CLIs on the subscriptions you already pay for, keeps the log in a file it owns, and takes an integer from 0 to 10 instead of a model name.",
   openGraph: {
     title: "silicon omni",
     description:
-      "One interface for Claude Code, Codex and Antigravity. Move a conversation between vendors mid-flight and it carries on where it left off.",
+      "One Python object over Claude Code, Codex and Antigravity. Move a conversation between vendors mid-run and it carries on with everything said before it already in its head.",
     siteName: "silicon omni",
     type: "website",
   },
@@ -19,6 +19,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        {/* Everything marked .enter waits for an observer to release it. With no
+            script there is no observer, so without this the page below the hero
+            is present, correct, and invisible. */}
+        <noscript>
+          <style>{`.enter { opacity: 1 !important; transform: none !important; }`}</style>
+        </noscript>
+      </head>
       <body>
         <Chrome>{children}</Chrome>
       </body>
