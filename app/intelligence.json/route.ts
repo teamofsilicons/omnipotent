@@ -16,7 +16,7 @@ import { NextRequest, NextResponse } from "next/server"
 
 import { dialFor, plottable, unusable } from "../../lib/dial"
 import { graph, VIEW } from "../../lib/graph"
-import { combinations, invocation, key } from "../../lib/providers"
+import { combinations, invocation, key, PROVIDERS } from "../../lib/providers"
 
 export const dynamic = "force-dynamic"
 
@@ -35,10 +35,16 @@ export async function GET(request: NextRequest) {
       providers: providers.length ? key(providers) : null,
       ladder: providers.length ? dialFor(models, providers) : null,
       ladders,
-      // the same rungs written out as the command each one is, so there is no
-      // question about how a name is meant to be used
+      // The same rungs written out as the command each one is, so there is no
+      // question about how a name is meant to be used.
+      //
+      // This has to follow the same `providers` filter as `ladder` above. It
+      // used to be hardcoded to the all-three ladder, which meant an install
+      // signed into one vendor was handed commands for the other two.
       runs: Object.fromEntries(
-        Object.entries(ladders["claude+google+openai"] ?? {}).map(([level, rung]) => [
+        Object.entries(
+          (providers.length ? dialFor(models, providers) : ladders[key(PROVIDERS.map((p) => p.id))]) ?? {},
+        ).map(([level, rung]) => [
           level,
           invocation(rung as { provider: string; model: string; effort: string }),
         ]),

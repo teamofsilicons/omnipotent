@@ -20,6 +20,10 @@ export interface Provider {
   efforts: string[]
   /** how the model is actually run, with <model> and <effort> filled in */
   run: string
+  /** what kind of thing `run` is. Two of the three are shell; one is not, and
+      printing a JSON-RPC call in a <code> block as if you could paste it into a
+      terminal is a small lie the site used to tell on its own landing page. */
+  wire: "a shell command" | "a JSON-RPC call over stdio"
   /** the effort argument on its own, dropped entirely when effort is "" */
   effortArg: string
 }
@@ -30,6 +34,7 @@ export const PROVIDERS: Provider[] = [
     label: "Claude Code",
     cli: "claude -p",
     run: "claude -p --model <model> <effort>",
+    wire: "a shell command",
     effortArg: "--effort <effort>",
     vendors: ["anthropic"],
     efforts: ["", "low", "medium", "high", "xhigh", "max"],
@@ -38,7 +43,8 @@ export const PROVIDERS: Provider[] = [
     id: "openai",
     label: "Codex",
     cli: "codex app-server",
-    run: 'codex app-server · turn/start { model: "<model>"<effort> }',
+    run: 'codex app-server --stdio  ·  turn/start { model: "<model>"<effort> }',
+    wire: "a JSON-RPC call over stdio",
     effortArg: ', effort: "<effort>"',
     vendors: ["openai"],
     efforts: ["", "low", "medium", "high", "xhigh", "max", "ultra"],
@@ -48,6 +54,7 @@ export const PROVIDERS: Provider[] = [
     label: "Antigravity",
     cli: "agy",
     run: "agy --model <model> <effort> --print",
+    wire: "a shell command",
     effortArg: "--effort <effort>",
     vendors: ["gemini", "anthropic", "openai"],
     efforts: ["", "low", "medium", "high"],
@@ -60,6 +67,10 @@ export const PROVIDERS: Provider[] = [
  * The point of showing this is that there is nothing else to know: the strings
  * in the dial go to the CLI untouched, so whatever a future model is called,
  * this is how it gets run.
+ *
+ * Two of the three are literally a shell command. Codex is not — it is a method
+ * on a JSON-RPC session — so `wire` says which, and callers are expected to
+ * print it rather than imply a terminal.
  */
 export function invocation(rung: { provider: string; model: string; effort: string }): string {
   const known = provider(rung.provider)
