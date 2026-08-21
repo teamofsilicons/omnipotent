@@ -115,7 +115,7 @@ export function Docs() {
             href="https://pypi.org/project/silicon-omni/"
             title="the release this page documents"
           >
-            v0.2.0
+            v0.3.0
           </a>
         </h1>
         <p className="lede rise" style={{ ["--i" as string]: 1, marginTop: "1.3rem", maxWidth: "34rem" }}>
