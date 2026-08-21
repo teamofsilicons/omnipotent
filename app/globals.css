@@ -2789,3 +2789,66 @@ html, body { overflow-x: clip; }
 /* Inside a 136px preview tile there is no room for chrome, so the tile borrows
    the colours alone — and at 11px they are the only thing that says "code". */
 .mini-code .t-comment { font-style: normal; }
+
+
+/* ===================================================================== tip
+
+   The label that follows the mark. See app/tip.tsx for why it is a
+   foreignObject and not a pile of <rect> and <text>.                        */
+
+.tip { pointer-events: none; overflow: visible; }
+
+.tip-slot {
+  display: flex;
+  height: 100%;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.tip-slot.start { justify-content: flex-start; }
+.tip-slot.end { justify-content: flex-end; }
+.tip-slot.under { align-items: flex-start; }
+
+.tip-plate {
+  display: inline-flex;
+  flex-direction: column;
+  gap: .18rem;
+  padding: .38rem .52rem .42rem;
+  background: var(--paper);
+  border-radius: var(--r-2);
+  box-shadow: 0 0 0 var(--hair) var(--line-2), 0 8px 20px -12px rgba(26, 26, 26, .35);
+  font-family: var(--pixel);
+  font-size: 10px;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.tip-line { display: flex; align-items: center; gap: .38rem; }
+
+.tip-badge {
+  display: inline-block;
+  padding: .1rem .28rem;
+  border-radius: var(--r-1);
+  box-shadow: inset 0 0 0 var(--hair) var(--line-2);
+  font-weight: 400;
+  font-size: 9px;
+  letter-spacing: .02em;
+}
+
+.tip-name { color: var(--ink); font-size: 11px; }
+.tip-name em { font-style: normal; color: var(--ink-48); }
+.tip-foot { color: var(--ink-48); }
+
+/* Said for ears only. The plate is for eyes and carries no live region, so the
+   sentence a screen reader needs still has to exist somewhere. */
+.said {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

@@ -6,6 +6,7 @@ import { beatenBy, dial, edge, plottable, type Entry, type Rung } from "../../li
 import { PROVIDERS } from "../../lib/providers"
 import { dial as levelColour, on as inkOn } from "../../lib/ramp"
 import { Logo, MARK, type Vendor } from "../logos"
+import { Tip } from "../tip"
 
 /**
  * The whole argument, drawn.
@@ -331,17 +332,40 @@ export function Graph({ models }: { models: Entry[] }) {
             </g>
           )
         })}
+
+        {held && (() => {
+          const mine = onEdge.has(key(held))
+          const rungs = mine ? (levels.get(key(held)) ?? []).sort((a, b) => b - a) : []
+          const [ox, oy] = nudge.current.get(key(held)) ?? [0, 0]
+          return (
+            <Tip
+              at={{ x: x(held.price) + ox, y: y(held.score) + oy }}
+              box={{ w: W, h: H }}
+              badge={
+                rungs.length
+                  ? rungs.length > 1
+                    ? `levels ${rungs.join("–")}`
+                    : `level ${rungs[0]}`
+                  : undefined
+              }
+              tone={rungs.length ? levelColour(rungs[0]) : undefined}
+              on={rungs.length ? inkOn(levelColour(rungs[0])) : undefined}
+              model={held.model}
+              effort={held.effort}
+              foot={`${held.score} elo · $${held.price}`}
+            />
+          )
+        })()}
       </svg>
 
       <div className={`graph-read${held ? " showing" : ""}`} aria-live="polite">
         {held ? (
           <>
-            <span className="graph-model">
+            {/* The plate at the mark says which model this is. The line here
+                says whether it earned a rung, and if not, what beat it. */}
+            <span className="said">
               {held.model}
-              {held.effort ? <em> {held.effort}</em> : null}
-            </span>
-            <span className="graph-nums">
-              {held.score} elo · ${held.price} per task
+              {held.effort ? ` ${held.effort}` : ""}, {held.score} elo, ${held.price} per task.
             </span>
             <span className="graph-verdict">
               {onEdge.has(key(held))

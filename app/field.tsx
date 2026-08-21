@@ -25,6 +25,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { beatenBy, dial as ladderOf, edge, type Rung } from "../lib/dial"
+import { Tip } from "./tip"
 import { dial as levelColour, on as inkOn } from "../lib/ramp"
 
 const key = (r: Rung) => `${r.provider}/${r.model}/${r.effort}`
@@ -277,6 +278,16 @@ export function Field({ points }: { points: Rung[] }) {
   const beater = lit && !onEdge.has(litKey!) ? beatenBy(lit, points) : null
   const litLevels = lit ? (levelsAt.get(litKey!) ?? []).sort((a, b) => b - a) : []
 
+  /* Where the lit mark is drawn, which is not always where its numbers put it:
+     a rung that has been fanned off a shared coordinate carries its own nudge. */
+  const litAt = useMemo(() => {
+    if (!litKey) return null
+    const fanned = rim.find((q) => key(q) === litKey)
+    if (fanned) return { x: fanned.x + fanned.dx, y: fanned.y + fanned.dy }
+    const flat = placed.find((q) => key(q) === litKey)
+    return flat ? { x: flat.x, y: flat.y } : null
+  }, [litKey, rim, placed])
+
   const decades = useMemo(() => {
     const out: number[] = []
     for (let e = Math.ceil(bounds.x0); e <= Math.floor(bounds.x1); e++) out.push(10 ** e)
@@ -473,6 +484,25 @@ export function Field({ points }: { points: Rung[] }) {
             </g>
           )
         })}
+
+        {lit && litAt && (
+          <Tip
+            at={litAt}
+            box={box}
+            badge={
+              litLevels.length
+                ? litLevels.length > 1
+                  ? `levels ${litLevels.join("–")}`
+                  : `level ${litLevels[0]}`
+                : undefined
+            }
+            tone={litLevels.length ? levelColour(litLevels[0]) : undefined}
+            on={litLevels.length ? inkOn(levelColour(litLevels[0])) : undefined}
+            model={lit.model}
+            effort={lit.effort}
+            foot={`${Math.round(lit.score)} elo · ${money(lit.price)}`}
+          />
+        )}
       </svg>
       </div>
 
@@ -482,18 +512,29 @@ export function Field({ points }: { points: Rung[] }) {
       <p className="field-read num" aria-live={held || pinned ? "polite" : "off"}>
         {lit ? (
           <>
+            {/* The plate at the mark already says which model this is, so the
+                line under the chart says the one thing a label cannot: whether
+                it earned a rung, and if not, what beat it. */}
+            <span className="said">
+              {litLevels.length
+                ? `${litLevels.length > 1 ? `levels ${litLevels.join(" to ")}` : `level ${litLevels[0]}`}, `
+                : ""}
+              {lit.model}
+              {lit.effort ? ` ${lit.effort}` : ""}, {Math.round(lit.score)} elo,{" "}
+              {money(lit.price)} a task.
+            </span>
             {litLevels.length > 0 && (
-              <span className="field-badge" style={{ ["--tone" as string]: levelColour(litLevels[0]), ["--on" as string]: inkOn(levelColour(litLevels[0])) }}>
+              <span
+                className="field-badge"
+                aria-hidden
+                style={{
+                  ["--tone" as string]: levelColour(litLevels[0]),
+                  ["--on" as string]: inkOn(levelColour(litLevels[0])),
+                }}
+              >
                 {litLevels.length > 1 ? `levels ${litLevels.join("–")}` : `level ${litLevels[0]}`}
               </span>
             )}
-            <span className="field-name">
-              {lit.model}
-              {lit.effort ? <em> {lit.effort}</em> : null}
-            </span>
-            <span className="field-nums">
-              {Math.round(lit.score)} elo · {money(lit.price)} a task
-            </span>
             {beater ? (
               <span className="field-verdict">
                 beaten by {beater.model}
