@@ -18,7 +18,7 @@ const RAILS = [
     holds: "claude -p --output-format stream-json --input-format stream-json",
     grammar: "one long-lived process. a turn is one JSON line on stdin",
     catch:
-      "Model and effort go down the same stdin control channel the turns do, so re-tuning the dial restarts nothing.",
+      "Model and effort go down the same stdin control channel the turns do, so the process stays up while the dial moves.",
   },
   {
     id: "openai",
@@ -27,16 +27,16 @@ const RAILS = [
     holds: "codex app-server --stdio",
     grammar: "JSON-RPC over newline-delimited JSON. turn/start, or turn/steer into a turn already running",
     catch:
-      "CODEX_HOME is pointed at a jail holding a symlink to your real auth.json and almost nothing else. No MCP server, no hook, no AGENTS.md is ever loaded.",
+      "CODEX_HOME is pointed at a jail. Inside it: a symlink to your real auth.json, and one near-empty config. That is the whole of what it loads.",
   },
   {
     id: "google",
     label: "Antigravity",
     gauge: 24,
     holds: 'agy --output-format stream-json --input-format stream-json --print ""',
-    grammar: 'the empty --print goes last. it takes a value, and anywhere else it eats the next flag',
+    grammar: 'the empty --print goes last, because it takes a value',
     catch:
-      "No flag for MCP, none for subagents, and no way to seed a session. So the history it missed is folded into the front of the next message: one turn, not two.",
+      "Antigravity takes its history inside the front of the next message. One turn does the work of two.",
   },
 ]
 

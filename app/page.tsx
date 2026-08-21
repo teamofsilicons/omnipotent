@@ -72,10 +72,10 @@ export default async function Landing() {
      counted out of the database at request time, so they cannot go stale
      against the graph directly above them. */
   const TALLY: [string, string][] = [
-    [String(points.length), "models it can run, every one of them measured"],
-    [String(walk.length), "survive the test: nothing beats them on both at once"],
-    ["3", "agentic CLIs, driven from one Python object"],
-    ["0", "dependencies, and no model name in the wheel"],
+    [String(points.length), `settings we can run — ${distinct} models at the efforts each takes`],
+    [String(walk.length), "survive it: everything better also costs more"],
+    ["3", "command lines, one object"],
+    ["0", "dependencies"],
     ["1", "file holds the conversation, whoever answers it"],
   ]
 
@@ -92,20 +92,19 @@ export default async function Landing() {
         <div className="shell hero-shell">
           <div className="hero-grid">
             <h1 className="rise">
-              The conversation is yours.
+              We keep the conversation.
               <br />
-              The vendor is a&nbsp;setting.
+              The three of them take&nbsp;turns.
             </h1>
             <div className="hero-side">
               <p className="lede rise" style={{ ["--i" as string]: 1 }}>
-                silicon omni drives Claude Code, Codex and Antigravity from one Python object, on
-                the subscriptions you already pay for. Move the dial from 7 to 4 and the same chat
-                finishes on another company&apos;s model, with everything said before it already in
-                its head.
+                We drive Claude Code, Codex and Antigravity from one Python object, on the
+                subscriptions you already have. Turn the dial from seven to four and the same chat
+                finishes on another company&apos;s model, knowing everything said before it.
               </p>
               <p className="hero-own rise" style={{ ["--i" as string]: 2 }}>
-                It holds no API key. It signs in as you, on consumer plans, under terms that were
-                not written with a Python library in mind.
+                We sign in as you, with the logins already on your machine. Consumer terms were
+                written for a person at a keyboard. Read yours.
               </p>
               <div className="row rise" style={{ ["--i" as string]: 3, marginTop: "1.4rem" }}>
                 <Command text="pip install silicon-omni" />
@@ -137,14 +136,6 @@ export default async function Landing() {
             convicts the car in the headline and sells more cars for it; the
             equivalent here is that the thing which makes omni cheap is also
             the thing nobody can indemnify you against. */}
-        <p className="set enter" style={{ maxWidth: "40rem", margin: "2.6rem 0 0" }}>
-          This is the ugly part, and it belongs at the top. omni owns no credential of its own: it
-          drives the three CLIs with the logins already sitting on your machine, which is why a run
-          costs you nothing beyond the subscription you were paying for anyway. Those are consumer
-          subscriptions, and consumer terms are written for a person at a keyboard rather than for a
-          Python object running a nightly job. Read yours before you point this at anything that
-          matters. The bill is not the risk here. The account is.
-        </p>
 
         <Contents />
 
@@ -153,18 +144,18 @@ export default async function Landing() {
           of={CHAPTERS}
           id="gauge"
           name="the break of gauge"
-          title="Three good CLIs. None of them speak."
+          title="Each of the three keeps its own memory."
           argue={
             <>
               <p>
-                Every vendor ships a good one, so you pick a good one, and you have also picked its
-                models, its rate limits and its bad afternoons. Leaving later costs you the
-                integration and the conversation you were in the middle of. The second one is the
-                expensive part, and it is the one nobody quotes you for.
+                Pick a good one and you have picked its models, its rate limits and its bad
+                afternoons with it. Leaving later costs you the integration and the conversation you
+                were in the middle of. The second one is the expensive part, and it is the one
+                nobody quotes you for.
               </p>
               <p>
-                omni takes the conversation off the vendor and keeps it in a file of its own. The
-                three CLIs become engines, and you can change an engine without stopping.
+                We keep the conversation in a file of our own. The three become engines, and you can
+                change an engine while it runs.
               </p>
             </>
           }
@@ -193,9 +184,9 @@ export default async function Landing() {
           <div className="spread lean">
             <p className="set">
               Three grammars, drawn here at three gauges. One takes flags and JSON lines on stdin.
-              One takes JSON-RPC over a socket. One takes neither, and has to be handed its history
-              folded into the front of the next message. omni holds all three open at once and tells
-              each of them the same story, in the only dialect that one will accept.
+              One takes JSON-RPC over a socket. One takes its history inside the front of the next
+              message. We hold all three open and tell each of them the same story, in the dialect
+              that one accepts.
             </p>
             <Plate
               name="diving-bell"
@@ -203,8 +194,8 @@ export default async function Landing() {
               alt="Engraving of Halley's diving bell, a man seated alone inside it on the sea floor"
               why={
                 <>
-                  One man, one hose, and one surface he is permitted to reach. A single vendor is
-                  comfortable in exactly this way.
+                  One man, one hose, and one surface he is permitted to reach. A single vendor feels
+                  like this from the inside.
                 </>
               }
             />
@@ -216,13 +207,12 @@ export default async function Landing() {
           of={CHAPTERS}
           id="write"
           name="what you write"
-          title="One object, and no API key."
+          title="One object, and the logins already on your machine."
           argue={
             <>
               <p>
-                No client to construct. No key to hold. No model string to keep current. omni
-                offers the providers whose CLI is installed <em>and</em> logged in, and it offers
-                nothing else — an uninstalled CLI is not a fallback, it is absent.
+                We offer the providers whose command line is installed <em>and</em> signed in.
+                That is the list you get.
               </p>
               <p>
                 The rest of the library is this same object. <code>send</code> from any thread,{" "}
@@ -257,19 +247,17 @@ export default async function Landing() {
           of={CHAPTERS}
           id="log"
           name="one integer"
-          title="One file. One integer. It only goes up."
+          title="Every line gets a number, and the number only goes up."
           argue={
             <>
               <p>
-                The session is a log omni appends to and never rewrites. Every line carries a
-                sequence number, and that number does not repeat across any provider the
-                conversation has passed through. A second, smaller file records how far up the log
-                each provider has actually been shown.
+                The session is a log we append to. Every line carries a number, and the number
+                runs on through every provider the conversation has passed through. A second,
+                smaller file holds how far up that log each one has read.
               </p>
               <p>
-                That is the entire trick. Arriving somewhere new replays only what it missed.
-                Coming back is cheap, because the provider resumes <em>its own</em> session and is
-                told only what happened while it was away.
+                Two files, and the rest follows. A provider arriving hears what it missed. A
+                provider coming back resumes <em>its own</em> session and hears the rest.
               </p>
             </>
           }
@@ -279,12 +267,18 @@ export default async function Landing() {
             <div>
               <p className="set">
                 Watch the second column fill. On the way out, the arriving provider is handed eight
-                lines it has never seen. Coming back, the first one is handed seven, and not the
-                fourteen the file holds by then, because the first six are already inside its own
-                session and it is resuming that rather than being told the story again. A
-                conversation written down is a list of things said in the order they were said.
-                Everything else on the disk is bookkeeping about that.
-              </p>
+              lines. Coming back, the first one is handed seven of the fourteen the file now holds,
+              because the first six are already inside its own session and it is resuming that.
+            </p>
+            <p className="set">
+              Benedict gave the kitchen a week at a time, and gave the changeover to both men at
+              once: the server going off washes up and returns the utensils to the cellarer, who
+              hands them to the server coming on,{" "}
+              <a className="link" href="https://www.gutenberg.org/cache/epub/50040/pg50040.txt">
+                in order that he may know what he gives out and what he receives back
+              </a>
+              . The second file is the cellarer&apos;s list.
+            </p>
               <Plate
                 name="punched-tape"
                 aside
@@ -303,8 +297,8 @@ export default async function Landing() {
               alt="A page from the log of HMS Amphitrite for 13 August 1914, hours ruled down the margin"
               why={
                 <>
-                  The hours are ruled down the margin before the day has happened. An hour with
-                  nothing written in it is evidence; an hour that was never ruled is not.
+                  The hours are ruled down the margin before the day happens. An hour with a blank
+                  against it still counts as an hour.
                 </>
               }
             />
@@ -316,11 +310,11 @@ export default async function Landing() {
           of={CHAPTERS}
           id="switch"
           name="the relay"
-          title="Three vendors hold one conversation."
+          title="We tell the next one what it missed."
           argue={
             <p>
               A real run, transcribed. One fact each to three companies&apos; models, then the
-              question put back to the first of them. Nothing was repeated to anybody.
+              question put back to the first. Each of them heard its own line once.
             </p>
           }
         >
@@ -340,10 +334,16 @@ export default async function Landing() {
 
           <div className="spread lean">
             <p className="set">
-              A tool the destination does not have arrives as text that reads as what happened —{" "}
+              A tool that belongs to somebody else arrives as text that reads as what happened —{" "}
               <code>[GoogleSearch: &quot;kite festivals&quot;]</code>. The structured original stays
-              in the log. Go back to Gemini and it resumes Gemini&apos;s own session, in which the
-              brackets never happened.
+              in the log, so going back to Gemini resumes Gemini&apos;s own session, which holds it.
+            </p>
+            <p className="set">
+              When a bob is called, the bells in fourth and fifth place ring on{" "}
+              <a className="link" href="https://archive.org/stream/changeringingan00troygoog/changeringingan00troygoog_djvu.txt">
+                as if no calling had been made
+              </a>
+              . Coming back, so does the provider.
             </p>
             <Plate
               name="wax-seal"
@@ -351,9 +351,8 @@ export default async function Landing() {
               alt="A 1176 charter of Philip of Alsace with his wax seal hanging from a parchment tag"
               why={
                 <>
-                  Anyone may copy the words; nobody can copy the seal. Reasoning is the seal —
-                  signed per vendor, replayable nowhere else, so omni records that the model thought
-                  and throws the thought itself away.
+                  The words copy. The seal stays where it was pressed. Reasoning is the seal, which
+                  is why we record that the model thought and keep the thought out of the file.
                 </>
               }
             />
@@ -365,7 +364,7 @@ export default async function Landing() {
           of={CHAPTERS}
           id="dial"
           name="the dial"
-          title="You turn a dial. You do not pick a model."
+          title="One number, nought to ten."
           argue={
             <>
               <p>
@@ -373,16 +372,15 @@ export default async function Landing() {
                 <a className="link" href="https://artificialanalysis.ai/evaluations/gdpval-aa">
                   GDPval
                 </a>{" "}
-                against the dollars it measurably took to score it. Only the upper-left edge of that
-                cloud becomes a dial. A model earns a level when nothing else on the graph is both
-                better <em>and</em> cheaper; the rest are real models that lose on both counts at
-                the same time.
+                against the dollars it measurably took to score it. The upper-left edge of that
+                cloud becomes the dial. A model earns a level when everything better also costs
+                more.
               </p>
               <p>
-                Level 10 is the top of the edge and the walk goes down and to the left, so a step
-                down is a saving you can name. Two of today&apos;s ten steps are smaller than the
-                benchmark can resolve; the dial below says which, because a number that cannot tell
-                you it is guessing is worse than no number.
+                Level 10 sits at the top of the edge and the walk goes down and to the left, so
+                every step saves money you can name. Two of today&apos;s ten steps fall inside the
+                benchmark&apos;s own error bars, and the dial below says which. Whether the trade is
+                worth it is the part we leave to you.
               </p>
             </>
           }
@@ -441,16 +439,15 @@ export default async function Landing() {
                     — and <strong>none at all</strong> to {missing.join(" or ")}, because every
                     model {missing.length > 1 ? "they serve is" : "it serves is"} beaten on both
                     counts by something on another vendor&apos;s list. That is this week&apos;s
-                    arithmetic and not a verdict, and it is the whole reason the board lives in a
-                    file you can edit rather than in the library.
+                    arithmetic, which is the whole reason the board lives in a file you can edit.
                   </>
                 )}
               </p>
               <p className="set">
                 Level 10 is{" "}
                 <strong>{top ? Math.round(top.score - floor.score) : 0} Elo above</strong> level 0
-                and <strong>{ratio}&times; the money</strong>. That trade is the only decision omni
-                makes you think about. There is also a different dial per set of providers: drop a vendor
+                and <strong>{ratio}&times; the money</strong>. That trade is the one thing we
+                make you think about. There is also a different dial per set of providers: drop a vendor
                 and models the other two were shadowing come back onto the rungs, so the same number
                 means something else to somebody signed into fewer things than you.{" "}
                 <a className="link" href="/models">
@@ -460,10 +457,13 @@ export default async function Landing() {
               </p>
               <p className="set">
                 One benchmark decides all of this. If Artificial Analysis mismeasures a model, or
-                stops publishing, or scores it on work that is not your work, the dial is wrong in
-                exactly that way and omni will not know. It is one third party, named, with its
-                method and its error bars printed — which is the best available answer and not a
-                good one.
+                stops publishing, or scores it on work unlike yours, the dial is wrong in exactly
+                that way and we carry on. It is one third party, named, with its method and its
+                error bars printed.
+              </p>
+              <p className="set">
+                A bee hunter gets his straight line out of the eighth or tenth flight. The first few
+                point somewhere else.
               </p>
             </div>
           </div>
@@ -475,17 +475,17 @@ export default async function Landing() {
           of={CHAPTERS}
           id="turn"
           name="the seam"
-          title="The provider has conduct. omni has command."
+          title="We wait for the turn to end."
           argue={
             <>
               <p>
                 Intelligence, providers, prompts and session swaps are written down the moment you
-                ask for them and applied at the next turn boundary, once the running tool has
-                finished. A model never changes underneath itself.
+                ask for them, and applied at the next turn boundary, once the running tool has
+                finished.
               </p>
               <p>
-                A message is the exception, and on purpose. Sent while a turn is running, it is{" "}
-                <em>injected</em> into that turn rather than queued behind it.
+                A message is the exception, and on purpose. Sent while a turn is running, it goes
+                into that turn.
               </p>
             </>
           }
@@ -506,9 +506,9 @@ export default async function Landing() {
 
           <p className="set" style={{ maxWidth: "38rem" }}>
             A ship under pilotage separates two things that software usually confuses. The pilot has
-            the <em>conduct</em> of the vessel; the master never stops being in{" "}
-            <em>command</em>. That is the whole of this chapter. The provider has conduct of the
-            turn — it decides what to say and which tool to reach for. omni has command: it owns the
+            the <em>conduct</em> of the vessel; the master stays in{" "}
+            <em>command</em>. The provider has conduct of the
+            turn — it decides what to say and which tool to reach for. We have command: the
             log, the counter, and the moment at which anything is allowed to change.
           </p>
 
@@ -520,9 +520,9 @@ export default async function Landing() {
               alt="Joseph Pennell's 1912 lithograph of the guard gate at Gatun Lock, standing closed in a dry chamber"
               why={
                 <>
-                  Drawn while the chamber was still dry, so that the gate can be seen doing nothing.
-                  No ship is ever lifted between levels: it waits with both gates shut, which is the
-                  only way anyone has found to change a level safely.
+                  Drawn while the chamber was still dry, so the gate can be seen at rest. A ship
+                  waits between two shut gates while the water finds its new level. Everyone who has
+                  tried it another way has stopped.
                 </>
               }
             />
@@ -534,23 +534,19 @@ export default async function Landing() {
           of={CHAPTERS}
           id="refusals"
           name="the refusals"
-          title="Five things it will not do."
+          title="Five things we refuse."
           argue={
-            <p>
-              What a tool refuses tells you more than what it claims. Here are the five, each with
-              its reason attached, because a refusal with no reason behind it is only a missing
-              feature wearing better clothes.
-            </p>
+            <p>Five, with the mechanism for each.</p>
           }
         >
           <div className="spread lean">
             <div className="nots">
               {[
-                ["Carry reasoning across a switch.", "Signed or encrypted per vendor, so it cannot be replayed anywhere else. omni records that the model thought and throws the content away — including out of your logs. Nothing gets it back."],
-                ["Define tools.", "It watches what the CLI already exposes. It never installs, renames or invents one."],
-                ["Pretend Antigravity can be muzzled.", "No flag exists there. So omni writes down that it ignored you, rather than quietly doing nothing and letting you believe otherwise."],
-                ["Guess a benchmark number.", "A model GDPval has not scored or costed is left off the dial, not estimated onto it."],
-                ["Ship a model list.", "A list baked into a release is a list going stale. With no registry reachable and nothing cached, omni raises rather than recommending last quarter's best buy."],
+                ["Carry reasoning across a switch.", "A vendor signs its reasoning, so it replays only where it was made. We record that the model thought, and drop the thought — out of your logs as well."],
+                ["Define tools.", "We watch what the command line already exposes."],
+                ["Muzzle Antigravity.", "Antigravity keeps that decision. We write down that we ignored you."],
+                ["Guess a benchmark number.", "A model GDPval has measured goes on the dial. A model it has yet to measure stays on the list."],
+                ["Ship a model list.", "A list inside a release goes stale. With the registry unreachable and the cache empty, we raise."],
               ].map(([what, why]) => (
                 <div key={what} className="not">
                   <Prohibit size={17} weight="bold" className="not-icon" />
@@ -567,8 +563,9 @@ export default async function Landing() {
               alt="An 1878 quarantine notice from the Cape Girardeau Board of Health, forbidding any vessel to land"
               why={
                 <>
-                  No steamboat to land freight or passengers within five miles of the town. A notice
-                  is useful in exact proportion to how precisely it names what it refuses.
+                  Ordered by the Board of Health: no steamboat to land freight or passengers within
+                  five miles of the town. A notice is useful in exact proportion to how precisely it
+                  names what it refuses.
                 </>
               }
             />
@@ -580,7 +577,7 @@ export default async function Landing() {
           of={CHAPTERS}
           id="database"
           name="the database"
-          title="Publishing is a commit."
+          title="The list is one text file."
           aside={
             <p className="ch-aside set">
             It matters whose file it is. The shipowners kept one register of ships and the
@@ -597,14 +594,13 @@ export default async function Landing() {
           argue={
             <>
               <p>
-                omni contains the name of no model. Not one. It asks this site for a finished map
-                from level to model, and hands two strings to a command line.
+                We ask this site for a finished map from level to model, and hand two strings to a
+                command line. Every model name on your machine arrived over the wire this morning.
               </p>
               <p>
-                The database behind that map is a text file: one JSON file in a public repository.
-                Editing it and committing is the whole publishing flow — no database, no login, no
-                release of the library, no redeploy. Git does what a table would have done: history,
-                blame, review, rollback.
+                The map comes out of one JSON file in a public repository. Editing it and committing
+                is the publish. Git does what a table would have done: history, blame, review,
+                rollback.
               </p>
               <p>
                 Which also means somebody&apos;s commit is your routing table. That is the trade.
@@ -656,8 +652,7 @@ export default async function Landing() {
 
         <section className="close enter">
           <h2 className="column">
-            One <code>pip install</code>. After that, the largest decision left is an integer
-            between 0 and 10.
+            One <code>pip install</code>, and one number.
           </h2>
           <div className="row" style={{ marginTop: "1.8rem" }}>
             <a className="btn solid" href="/docs">

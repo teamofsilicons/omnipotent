@@ -150,7 +150,7 @@ function MiniNots() {
       {[
         "Carry reasoning across a switch.",
         "Define tools.",
-        "Pretend Antigravity can be muzzled.",
+        "Muzzle Antigravity.",
         "Guess a benchmark number.",
         "Ship a model list.",
       ].map((n) => (
@@ -167,40 +167,40 @@ const ENTRIES = [
   {
     href: "#dial",
     wide: true,
-    ask: "Which one is actually worth the money?",
-    how: "Score plotted against measured cost. Only the upper-left edge becomes the dial: eleven rungs, nothing sideways.",
+    ask: "Which one is worth the money?",
+    how: "Score against measured cost. The upper-left edge becomes the dial: eleven rungs, and every step down saves.",
     art: <MiniFrontier />,
   },
   {
     href: "#log",
     ask: "What happens to the conversation?",
-    how: "One file omni owns, one rising integer, and a note of how far each vendor has read.",
+    how: "It lives in a file we keep, with one number that only goes up.",
     art: <MiniTape />,
   },
   {
     href: "#write",
-    ask: "How much do I have to write?",
-    how: "One object. No client, no API key, no model string to keep current.",
+    ask: "How much do I write?",
+    how: "One object, and the logins already on your machine.",
     art: <MiniCode />,
   },
   {
     href: "#turn",
     wide: true,
     ask: "Can a model change halfway through my tool call?",
-    how: "No. Intelligence, providers and prompts are recorded when you ask and applied at the next turn boundary. A message is injected where you sent it.",
+    how: "We wait for the turn to end. A message goes in where you sent it.",
     art: <MiniSeam />,
   },
   {
     href: "#database",
     wide: true,
     ask: "Where does the model list live?",
-    how: "One JSON file in a public git repository. Editing it and committing is the publish — no database, no login, no release, no redeploy.",
+    how: "One text file in a public repository. Editing it and committing is the publish.",
     art: <MiniPipe />,
   },
   {
     href: "#refusals",
-    ask: "What will it not do?",
-    how: "Five refusals, on the record, each with its reason attached.",
+    ask: "What do you refuse?",
+    how: "Five things, each with its reason.",
     art: <MiniNots />,
   },
 ]
