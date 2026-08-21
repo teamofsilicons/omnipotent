@@ -2306,3 +2306,17 @@ html, body { overflow-x: clip; }
 .dialer-wire { margin: 1.1rem 0 .3rem; font-size: 9.5px; color: var(--ink-34); }
 .dialer-run { margin-top: 0; }
 .dialer-delta b { color: var(--ink); font-weight: 400; }
+
+
+/* ------------------------------------------------- tables on a narrow screen
+
+   A four-column table at 390px is either a scroll bar or a lie about how much
+   fits. These drop the column a phone reader needs least — the holding
+   institution, which is one tap away down the link that is still there.     */
+
+@media (max-width: 720px) {
+  .rows { font-size: 12.5px; }
+  .rows th, .rows td { padding-right: .7rem; }
+  .credits th:nth-child(3), .credits td:nth-child(3) { display: none; }
+  .rows.wide th:nth-child(4), .rows.wide td:nth-child(4) { display: none; }
+}

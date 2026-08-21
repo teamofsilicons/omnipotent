@@ -71,7 +71,7 @@ export default async function Models() {
           </p>
         }
       >
-        <table className="rows" style={{ maxWidth: "46rem" }}>
+        <table className="rows wide" style={{ maxWidth: "46rem" }}>
           <thead>
             <tr>
               <th style={{ width: "3rem" }}>level</th>
@@ -122,7 +122,7 @@ export default async function Models() {
           </p>
         }
       >
-        <table className="rows" style={{ maxWidth: "52rem" }}>
+        <table className="rows wide" style={{ maxWidth: "52rem" }}>
           <thead>
             <tr>
               <th>model</th>
